@@ -13,35 +13,21 @@ from getters import persons, repos
 
 def get_MemberEvent(repo_name, created_at, json_payload, db, record, member_past_repo_names, members_dict):
 
+	if repo_name not in member_past_repo_names:
+		members_dict['{}'.format(repo_name)] = [record]
+	else:
+		members_dict['{}'.format(repo_name)].append(record)
+	member_past_repo_names.add(repo_name)
 
-        if repo_name not in member_past_repo_names:
+	# save in the database
+	try:
+		db.add_data(repo_name, created_at, 'members', members_dict)
+	except Exception as e:
+		print("Failed to save %s MemberEvent record at %s: %s" % \
+				(repo_name, created_at, str(e)))
+	
 
-
-                members_dict['{}'.format(repo_name)] = [record]
-                
-
-        else:
-                members_dict['{}'.format(repo_name)].append(record)
-
-        member_past_repo_names.add(repo_name)
-
-                
-
-        # save in the database
-        try:
-                db.add_data(repo_name, created_at, 'members', members_dict)
-        except Exception as e:
-                print("Failed to save %s MemberEvent record at %s: %s" % \
-                                (repo_name, created_at, str(e)))
-        
-
-        # event_type = 'MemberEvent'
-
- 
-
-        # repos.get_Repo(repo_name, created_at, json_payload, record_d, db, event_type)
-        # persons.get_Person(repo_name, created_at, json_payload, record_d, db, event_type)
-
-
-
+	# event_type = 'MemberEvent'
+	# repos.get_Repo(repo_name, created_at, json_payload, record_d, db, event_type)
+	# persons.get_Person(repo_name, created_at, json_payload, record_d, db, event_type)
 

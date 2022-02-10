@@ -1,0 +1,5 @@
+.gitignore
+*.pyc
+*.sqlite
+*.log
+__pycache__

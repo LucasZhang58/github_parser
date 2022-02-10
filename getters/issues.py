@@ -6,6 +6,7 @@ import os
 import sys
 from inspect import currentframe, getframeinfo
 from getters import persons, repos
+
 ##########################
 # Issues Events
 ##########################
@@ -68,7 +69,6 @@ def get_IssuesEvent(repo_name, created_at, json_payload, db):
 		else:
 			user = None
 	except KeyError as ke:
-	 
 		try:
 			if isinstance(json_payload['issue'], dict):
 				user = json_payload['issue']['user']['issue_id']
@@ -145,6 +145,5 @@ def get_IssuesEvent(repo_name, created_at, json_payload, db):
 				(repo_name, created_at, str(e)))
 
 	# event_type = 'IssuesEvent'
-
 	# repos.get_Repo(repo_name, created_at, json_payload, record_d, db, event_type)
 	# persons.get_Person(repo_name, created_at, json_payload, record_d, db, event_type)
