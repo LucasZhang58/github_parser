@@ -88,12 +88,17 @@ class Database:
 	##################################################################
 	# Add event data for a repo
 	##################################################################
-	def add_data(self, repo_name, created_at, data_type, data_dict):
+	def add_data(self, repo_id, created_at, data_type, data_dict):
 		try:
+			# NOTE: @repo_id is full repo name
+			if '/' not in repo_id:
+				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
+				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
+
 			converted_data = self.convert_none_to_empty(data_dict)
-			key = repo_name + '%' + data_type + '%' + created_at
+			key = repo_id + '%' + data_type + '%' + created_at
 			self.__r.hmset(key, converted_data)
-			key = repo_name + '%' + data_type
+			key = repo_id + '%' + data_type
 			self.__r.sadd(key, created_at)
 		except Exception as e:
 			print('ERROR: ' + str(e))
