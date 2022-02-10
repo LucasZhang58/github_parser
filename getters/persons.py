@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
+from getters import persons, repos
 
 
 
@@ -14,7 +15,7 @@ from inspect import currentframe, getframeinfo
 # Person
 ##########################
 
-def get_Person(repo_name, created_at, json_payload, db, event_type):
+def get_Person(repo_name, created_at, json_payload, record_d, db, event_type):
         login = None
         id = None
         avatar_url = None
@@ -27,7 +28,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         login = json_payload['release']['author']['login']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         login = None
                 except Exception as e:
 
@@ -40,7 +41,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         id = json_payload['release']['author']['id']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         id = None
                 except Exception as e:
                         id = None
@@ -52,7 +53,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         avatar_url = json_payload['release']['author']['avatar_url']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         avatar_url = None
                 except Exception as e:
                         print(str(e))
@@ -67,7 +68,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         gravatar_id = json_payload['release']['author']['gravatar_id']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         gravatar_id = None
                 except Exception as e:
                         gravatar_id = None
@@ -79,7 +80,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         url = json_payload['release']['author']['url']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         url = None
                 except Exception as e:
                         url = None
@@ -91,11 +92,11 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
 
 
         # FORK EVENT
-        if event_type == 'ForkEvent':
+        if event_type == 'ForkEvent' and isinstance(record_d['forkee'], dict):
                 try:
                         login = json_payload['forkee']['owner']['login']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         login = None
                 except Exception as e:
                         login = None
@@ -107,7 +108,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         id = json_payload['forkee']['owner']['id']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         id = None
                 except Exception as e:
                         id = None
@@ -119,7 +120,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         avatar_url = json_payload['forkee']['owner']['avatar_url']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         avatar_url = None
                 except Exception as e:
                         avatar_url = None
@@ -136,7 +137,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         gravatar_id = json_payload['forkee']['owner']['gravatar_id']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         gravatar_id = None
                 except Exception as e:
                         gravatar_id = None
@@ -148,7 +149,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                 try:
                         url = json_payload['forkee']['owner']['url']
                 except KeyError as ke:
-                        print(str(ke))
+                        #print(str(ke))
                         url = None
                 except Exception as e:
                         url = None
@@ -162,7 +163,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                         try:
                                 login = json_payload['member']['login']
                         except KeyError as ke:
-                                print(str(ke))
+                                #print(str(ke))
                                 login = None
                         except Exception as e:
                                 login = None
@@ -174,7 +175,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                         try:
                                 id = json_payload['member']['id']
                         except KeyError as ke:
-                                print(str(ke))
+                                #print(str(ke))
                                 id = None
                         except Exception as e:
                                 id = None
@@ -186,7 +187,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                         try:
                                 avatar_url = json_payload['member']['avatar_url']
                         except KeyError as ke:
-                                print(str(ke))
+                                #print(str(ke))
                                 avatar_url = None
                         except Exception as e:
                                 avatar_url = None
@@ -203,7 +204,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                         try:
                                 gravatar_id = json_payload['member']['gravatar_id']
                         except KeyError as ke:
-                                print(str(ke))
+                                #print(str(ke))
                                 gravatar_id = None
                         except Exception as e:
                                 gravatar_id = None
@@ -215,7 +216,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                         try:
                                 url = json_payload['member']['url']
                         except KeyError as ke:
-                                print(str(ke))
+                                #print(str(ke))
                                 url = None
                         except Exception as e:
                                 url = None
@@ -230,7 +231,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                                 try:
                                         login = json_payload['issue']['user']['login']
                                 except KeyError as ke:
-                                        print(str(ke))
+                                        #print(str(ke))
                                         login = None
                                 except Exception as e:
                                         login = None
@@ -242,7 +243,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                                 try:
                                         id = json_payload['issue']['user']['id']
                                 except KeyError as ke:
-                                        print(str(ke))
+                                        #print(str(ke))
                                         id = None
                                 except Exception as e:
                                         id = None
@@ -254,7 +255,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                                 try:
                                         avatar_url = json_payload['issue']['user']['avatar_url']
                                 except KeyError as ke:
-                                        print(str(ke))
+                                        #print(str(ke))
                                         avatar_url = None
                                 except Exception as e:
                                         avatar_url = None
@@ -271,7 +272,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                                 try:
                                         gravatar_id = json_payload['issue']['user']['gravatar_id']
                                 except KeyError as ke:
-                                        print(str(ke))
+                                        #print(str(ke))
                                         gravatar_id = None
                                 except Exception as e:
                                         gravatar_id = None
@@ -283,7 +284,7 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                                 try:
                                         url = json_payload['issue']['user']['url']
                                 except KeyError as ke:
-                                        print(str(ke))
+                                        #print(str(ke))
                                         url = None
                                 except Exception as e:
                                         url = None
@@ -307,44 +308,28 @@ def get_Person(repo_name, created_at, json_payload, db, event_type):
                         }
 
 
-                        if '/' in repo_name:
-                                user_id, repo_name = repo_name.split('/')
-                        else:
-                                repo_name = repo_name
-                                user_id = None
 
-                        # check if user dir exist
-                        if user_id != None:
-                                user_dir_path = os.path.join(output_path, user_id)
-                        else:
-                                user_dir_path = output_path
-
-                        if not os.path.exists(user_dir_path):
-                                os.mkdir(user_dir_path)
-
-                        repo_dir_path = os.path.join(user_dir_path, repo_name)
-                        if not os.path.exists(repo_dir_path):
-                                os.mkdir(repo_dir_path)
-
-                        completeName = os.path.join(repo_dir_path, 'person_' + str(user_id) + ".json")
+        # save in the database
+        try:
+                db.add_data(repo_name, created_at, 'person', person_dict)
+        except Exception as e:
+                print("Failed to save %s person data at %s: %s" % \
+                                (repo_name, created_at, str(e)))
+                traceback.print_exc()
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)
 
 
-                        # if file exists, load prev data		
-                        if os.path.exists(completeName):
-                                try:
-                                        with open(completeName, 'r') as f:
-                                                d = f.read()
-                                                data = json.loads(d)
-                                except Exception as e:
-                                        frameinfo = getframeinfo(currentframe())
-                                        print(frameinfo.filename, frameinfo.lineno)     
-                                        print(str(e))
-                                        print('getPerson: Exit')
-                                        exit(1)
 
 
-                        data = person_dict
 
-                        output_file_data = json.dumps(data)
-                        with open(completeName, 'w') as f:
-                                f.write(output_file_data)
+
+####################
+
+
+
+
+
+
+
+

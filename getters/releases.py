@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
+from getters import persons, repos
 
 
 ##########################
@@ -260,3 +261,11 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
         except Exception as e:
                 traceback.print_exc()
                 print("Failed to save %s ReleaseEvent record at %s: %s" % (repo_name, created_at, str(e)))
+
+        event_type = 'ReleaseEvent'
+
+
+
+
+        # repos.get_Repo(repo_name, created_at, json_payload, record_d, db, event_type)
+        # persons.get_Person(repo_name, created_at, json_payload, record_d, db, event_type)

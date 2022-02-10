@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
+from getters import persons, repos
 
 ##########################
 # Member Events
@@ -36,7 +37,10 @@ def get_MemberEvent(repo_name, created_at, json_payload, db, record, member_past
 
         # event_type = 'MemberEvent'
 
-        # get_Person(repo_name, created_at, json_payload, output_path, lock, event_type)
+ 
+
+        # repos.get_Repo(repo_name, created_at, json_payload, record_d, db, event_type)
+        # persons.get_Person(repo_name, created_at, json_payload, record_d, db, event_type)
 
 
 

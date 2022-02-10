@@ -1,21 +1,25 @@
-import gzip
-import json
-import gzip_github_parser as ghp
 import os
 import sys
-import re
-#import multiprocess as mp
 import gzip_github_parser as ghp
 
 from db import Database
 import multiprocess as mp
 
-input_path = r'/opt/GHArchive'
-
 ##############################
 # main function
 ##############################
 def main():
+
+	# validate number of inputs
+	if len(sys.argv) != 2:
+		print("USAGE: python3 %s <path-to-dir-containing-gharchive-gzip-files>" % (sys.argv[0]))
+		exit(1)
+
+	# validate input path
+	input_path = sys.argv[1]
+	if not os.path.exists(input_path) or not os.path.isdir(input_path):
+		print("%s does not exist. Exiting!" % (input_path))
+		exit(1)
 
 	# get db manager
 	try:

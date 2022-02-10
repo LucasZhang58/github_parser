@@ -2,15 +2,9 @@
 #####	 MULTIPROCESS.PY
 import signal
 import multiprocessing
-import json
-import pandas as pd
 import os
-import sys
 import re
-import gzip_getters
-import math
 import sys
-import gzip_github_parser as ghp
 
 ###########################################################
 # Signal Handling

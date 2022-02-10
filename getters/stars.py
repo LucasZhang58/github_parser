@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
+from getters import repos, persons
 
 
 
@@ -75,4 +76,10 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
                 traceback.print_exc()
                 print("Failed to save %s WatchEvent record at %s: %s" % \
                                 (repo_name, created_at, str(e)))
+
+        
+        # event_type = 'WatchEvent'
+
+        # repos.get_Repo(repo_name, created_at, json_payload, record_d, db, event_type)
+        # persons.get_Person(repo_name, created_at, json_payload, record_d, db, event_type)
 
