@@ -40,7 +40,7 @@ class Database:
 	##################################################################
 	# convert None to ''
 	##################################################################
-	def convert_none_to_empty(data_dict):
+	def convert_none_to_empty(self, data_dict):
 		converted_data = {}
 		for k, v in data_dict.items():
 			if v == None:
