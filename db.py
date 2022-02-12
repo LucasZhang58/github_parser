@@ -53,9 +53,11 @@ class Database:
 	##################################################################
 	# Add GitHub user data
 	##################################################################
-	def add_user(self, user_id, data_dict):
+	def add_user(self, user_name_string, data_dict):
 		try:
-			key = 'user%' + user_id
+			key = 'user%' + user_name_string
+			# print('key: ' + str(key))
+			# print('data_dict: ' + str(data_dict))
 			converted_data = self.convert_none_to_empty(data_dict)
 			self.__r.hmset(key, converted_data)
 		except Exception as e:
@@ -68,17 +70,18 @@ class Database:
 	##################################################################
 	# Add GitHub repo data
 	##################################################################
-	def add_repo(self, repo_id, data_dict):
+	def add_repo(self, repo_fullname, data_dict):
 		try:
 			# NOTE: @repo_id is full repo name
-			if '/' not in repo_id:
+			if '/' not in repo_fullname:
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 
-			key = 'repo%' + repo_id
+			key = 'repo%' + repo_fullname
 			converted_data = self.convert_none_to_empty(data_dict)
 			self.__r.hmset(key, converted_data)
 		except Exception as e:
+			print('full repo name: ' + str(repo_fullname))
 			print('ERROR: ' + str(e))
 			traceback.print_exc()
 			frameinfo = getframeinfo(currentframe())
@@ -88,17 +91,18 @@ class Database:
 	##################################################################
 	# Add event data for a repo
 	##################################################################
-	def add_data(self, repo_id, created_at, data_type, data_dict):
+	def add_data(self, repo_fullname, created_at, data_type, data_dict):
 		try:
 			# NOTE: @repo_id is full repo name
-			if '/' not in repo_id:
+			if '/' not in repo_fullname:
+				print('repo_fullname: ' + str(repo_fullname))
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 
 			converted_data = self.convert_none_to_empty(data_dict)
-			key = repo_id + '%' + data_type + '%' + created_at
+			key = repo_fullname + '%' + data_type + '%' + created_at
 			self.__r.hmset(key, converted_data)
-			key = repo_id + '%' + data_type
+			key = repo_fullname + '%' + data_type
 			self.__r.sadd(key, created_at)
 		except Exception as e:
 			print('ERROR: ' + str(e))

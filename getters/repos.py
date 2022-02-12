@@ -6,441 +6,118 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
+import getters.name as name
+
 ##########################
 # REPO
 ##########################
-
-def get_Repo(repo_name, created_at, json_payload, record_d, db, event_type):
-
-	repo_name = repo_name
+def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
+	repo_name = None
 	repo_url = None
-
-	created_at = None
-
+	repo_created_at = None
 	repo_description = None
 	repo_homepage = None
 	size = None
 	language = None
-	  #  license = None
-
 	owner = None
 	is_forked = None
-
-	if '"repo":' in str(record_d):
-
+	try:
 		try:
-			repo_name = record_d['repo']['name']
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			repo_name = repo_name
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-		try:
-			repo_url = record_d['repo']['url']
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			repo_url = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-		try:
-			id = record_d['repo']['id']
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			id = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-	if event_type == 'ForkEvent' and isinstance(record_d['forkee'], dict):
-		try:
-			repo_name = record_d['forkee']['name']
+			repo_name = in_dict['name']
 		except KeyError as ke:
 			repo_name = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
+
 		try:
-			repo_url = record_d['forkee']['url']
-				
+			repo_url = in_dict['url']          
 		except KeyError as ke:
 			repo_url = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			created_at = record_d['forkee']['created_at']
-				
-		except KeyError as ke:
-			created_at = created_at
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			pushed_at = record_d['forkee']['pushed_at']
+			repo_created_at = in_dict['created_at']
+		except KeyError as ke:
+			repo_created_at = None
+
+		try:
+			pushed_at = in_dict['pushed_at']
 		except KeyError as ke:
 			pushed_at = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			repo_description = record_d['forkee']['description']
+			repo_description = in_dict['description']
 		except KeyError as ke:
 			repo_description = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			repo_homepage = record_d['forkee']['homepage']
+			repo_homepage = in_dict['homepage']            
 		except KeyError as ke:
 			repo_homepage = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
-
-	
 
 		try:
-			size = record_d['forkee']['size']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			size = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
-		try:
-			language = record_d['forkee']['language']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			language = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			owner = record_d['forkee']['owne']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			owner = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-		
-		try:
-			is_forked = record_d['forkee']['fork']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			is_forked = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			id = record_d['forkee']['id']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			id = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			private = record_d['forkee']['private']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			private = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
-		try:
-			has_issues = record_d['forkee']['has_issues']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			has_issues = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
-
-	
-
-		try:
-			has_downloads = record_d['forkee']['has_downloads']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			has_downloads = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
-
-		try:
-			has_wiki = record_d['forkee']['has_wiki']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			has_wiki = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-	if '"repository":' in str(record_d):
-		try:
-			repo_name = record_d['repository']['name']
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			repo_name = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
-		try:
-			repo_url = record_d['repository']['url']
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			repo_url = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			created_at = record_d['repository']['created_at']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			created_at = created_at
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			pushed_at = record_d['repository']['pushed_at']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			pushed_at = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		try:
-			repo_description = record_d['repository']['description']
-				
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			repo_description = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-		try:
-			repo_homepage = record_d['repository']['homepage']
-		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
-			repo_homepage = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-
-		try:
-			size = record_d['repository']['size']
+			size = in_dict['size']          
 		except KeyError as ke:
 			size = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
+
 		try:
-			language = record_d['repository']['language']
-				
+			language = in_dict['language']             
 		except KeyError as ke:
 			language = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			owner = record_d['repository']['owne']
+			owner = in_dict['owner']['login']            
 		except KeyError as ke:
 			owner = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			is_forked = record_d['repository']['fork']
+			is_forked = in_dict['fork']                   
 		except KeyError as ke:
 			is_forked = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			id = record_d['repository']['id']
+			id = in_dict['id']   
 		except KeyError as ke:
 			id = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			private = record_d['repository']['private']
-				
+			private = in_dict['private']        
 		except KeyError as ke:
-			#print('GET_REPO_KEYERROR: ' + str(ke))
 			private = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
-		
+
 		try:
-			has_issues = record_d['repository']['has_issues']
+			has_issues = in_dict['has_issues']                
 		except KeyError as ke:
 			has_issues = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			has_downloads = record_d['repository']['has_downloads']
+			has_downloads = in_dict['has_downloads']         
 		except KeyError as ke:
 			has_downloads = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
 
 		try:
-			has_wiki = record_d['repository']['has_wiki']
+			has_wiki = in_dict['has_wiki']          
 		except KeyError as ke:
 			has_wiki = None
-		except Exception as e:
-			print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('GET_REPO_EXCEPTION: ' + str(e))
-			exit(1)
+	except Exception as e:
+		print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)     
+		print('GET_REPO_EXCEPTION: ' + str(e))
+		exit(1)
+
+	if repo_url == None:
+		return
 
 	repo_dict = {}
 	if repo_name:
-		repo_dict['repo_name'] = repo_name
-	
-	if repo_url:
-		repo_dict['repo_url'] = repo_url
+		repo_dict['repo_name'] = repo_name  
 
-	if created_at:
-		repo_dict['created_at'] = created_at
+	if repo_url:
+		repo_dict['repo_url'] = repo_url 
+
+	if repo_created_at:
+		repo_dict['repo_created_at'] = repo_created_at
 
 	if pushed_at:
-		repo_dict['pushed-at'] = pushed_at
+		repo_dict['pushed_at'] = pushed_at           
 
 	if repo_description:
 		repo_dict['repo_description'] = repo_description
@@ -474,10 +151,23 @@ def get_Repo(repo_name, created_at, json_payload, record_d, db, event_type):
 
 	if has_wiki:
 		repo_dict['has_wiki'] = has_wiki
-  
+
+	if 'repo' in record_d and 'repository' in record_d:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION')
+		exit(1)
+
+	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)        
+	if not full_repo_name:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('full_repo_name is None')
+		exit(1)
+
 	# save in the database
 	try:
-		db.add_data(repo_name, created_at, 'repos', repo_dict)
+		db.add_repo(full_repo_name, repo_dict)
 	except Exception as e:
 		print("Failed to save %s repo data at %s: %s" % \
 				(repo_name, created_at, str(e)))

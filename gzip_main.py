@@ -28,12 +28,14 @@ def main():
 		print("Failed to get dbing manager: %s. Exiting!" % (str(e)))
 		exit(1)
 
-	# collect the records
+	# traverse dir struct
 	gzip_file_list = []
-	for gzip_file in os.listdir(input_path):
-		gzip_file_list.append(gzip_file)
+	for root_dir, dirs, files in os.walk(input_path, topdown=False):
+		for file_name in files:
+			gzip_file_list.append(os.path.join(root_dir, file_name))
 
 	print("Collected %d gzipped files" % (len(gzip_file_list)))
+
 	args = [input_path, db]
 	mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
 

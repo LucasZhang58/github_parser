@@ -15,11 +15,12 @@ import members
 import repos
 import persons
 import commits
+import refs
   
 ######################
 # Parse Events
 ######################
-def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, db, member_past_repo_names, member_dict, commits, commit_past_repo_names):
+def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, db, member_past_repo_names, member_dict, commits, commit_past_repo_names, ref_past_repo_names):
 
 	if 'WatchEvent' == record_d['type']:
 		stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
@@ -30,28 +31,31 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
 	elif 'ForkEvent' == record_d['type']:
 		forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
 
-	elif 'IssuesEvent' == record_d['type']:
-		pass
-		# TODO enable this
-		#issues.get_IssuesEvent(repo_name, created_at, json_payload, db)
+	# elif 'CreateEvent' == record_d['type']:
+	# 	refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
-	elif 'PushEvent' == record_d['type']:
-		pass
-		# TODO enable this
-		#commits.get_PushEvent(repo_name, created_at, json_payload, db, commits, commit_past_repo_names)
+	# elif 'IssuesEvent' == record_d['type']:
+	# 	pass
+	# 	# TODO enable this
+	# 	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
-	elif 'MemberEvent' == record_d['type']:
-		pass
-		# TODO enable this
-		#members.get_MemberEvent(repo_name, created_at, json_payload, db, record_d, member_past_repo_names, member_dict)
+	# elif 'PushEvent' == record_d['type']:
+	# 	pass
+	# 	# TODO enable this
+	# 	commits.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
-	# skip these events
-	elif record_d['type'] in ['IssueCommentEvent', 'PullRequestEvent', 'PullRequestReviewCommentEvent', 'GollumEvent', 'CommitCommentEvent']:
-		pass
+	# elif 'MemberEvent' == record_d['type']:
+	# 	pass
+	# 	# TODO enable this
+	# 	#members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, record_d, member_past_repo_names, member_dict)
 
-	else:
-		# TODO enable this
-		print("Ignoring %s events" % (record_d['type']))
+	# # skip these events
+	# elif record_d['type'] in ['IssueCommentEvent', 'PullRequestEvent', 'PullRequestReviewCommentEvent', 'GollumEvent', 'CommitCommentEvent']:
+	# 	pass
+
+	# else:
+	# 	# TODO enable this
+	# 	print("Ignoring %s events" % (record_d['type']))
 
 ######################
 # Parse Record
@@ -62,6 +66,7 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
 
 	member_past_repo_names = set()
 	commit_past_repo_names = set()
+	ref_past_repo_names = {}
 	member_dict = {}
 	commits = []
 
@@ -125,7 +130,7 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
 			# parse records
 			try:
 				if repo_name != "test":
-					parse_event(repo_name, created_at, json_payload, record_d, db,	member_past_repo_names, member_dict, commits, commit_past_repo_names)
+					parse_event(repo_name, created_at, json_payload, record_d, db,	member_past_repo_names, member_dict, commits, commit_past_repo_names, ref_past_repo_names)
 			except Exception as e:
 				print('parse_event EXCEPTION: ' +  (str(e)))
 				print('json_payload: ' + str(json_payload))
