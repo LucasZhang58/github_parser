@@ -12,32 +12,57 @@ import getters.name as name
 # Watch Events
 ##########################
 def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
+	actor = None
+	starred_at = None
+	actor_gravatar = None
+
 	try:
 		try:
-			actor = json_payload['actor']['login']
+			if isinstance(json_payload['actor'], str):
+				actor = json_payload['actor']
+			elif isinstance(json_payload['actor'], dict):
+				actor = json_payload['actor']['login']
+			else:
+				# print('record_d: ' + str(record_d))
+				raise KeyError("KEYERROR: json_payload['actor'] is not a str or dict")
 		except KeyError:
-			try:
-				if isinstance(record_d['actor'], dict):
+				if isinstance(record_d['actor'], str):
+					actor = record_d['actor']
+				elif isinstance(record_d['actor'], dict):
 					actor = record_d['actor']['login']
 				elif isinstance(record_d['actor_attributes'], dict):
 					actor = record_d['actor_attributes']['login']
 				else:
-					raise KeyError
-			except KeyError:
-				actor = None
-
+					# print('record_d: ' + str(record_d))
+					raise Exception("Exception: json_payload['actor'] is not a str or dict")
+		# acttor_gravatar
 		starred_at = created_at
-
+		try:
+			if isinstance(record_d['actor'], dict):
+				actor_gravatar = record_d['actor']['actor_gravatar']
+			elif isinstance(record_d['actor_attributes'], dict):
+				actor_gravatar = record_d['actor_attributes']['actor_gravatar']
+			else:
+				# print('record_d: ' + str(record_d))
+				raise KeyError("KEYERROR: record_d['actor'] and record_d['actor'] are not dicts")
+		except KeyError:
+			actor_gravatar = None
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)
 		print('WATCHEVENT_EXCEPTION: %s\njson_payload: %s\nrecord_d: %s' % \
 			(str(e), json_payload, record_d))
+		print('record_d: ' + str(record_d))
+		traceback.print_exc()
 		exit(1)
 
-	stars_dict = {'starred_at': starred_at}
+	stars_dict = {}
+	if starred_at:
+		stars_dict['starred_at'] = starred_at
 	if actor:
 		stars_dict['actor'] = actor
+	if actor_gravatar:
+		stars_dict['actor_gravatar'] = actor_gravatar
 	
 	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
 	if not full_repo_name:

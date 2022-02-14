@@ -14,7 +14,7 @@ import issues
 import members
 import repos
 import persons
-import commits
+#import commits
 import refs
   
 ######################
@@ -25,11 +25,11 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
 	if 'WatchEvent' == record_d['type']:
 		stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
 
-	elif 'ReleaseEvent' == record_d['type']:
-		releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
+	# elif 'ReleaseEvent' == record_d['type']:
+	# 	releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
 
-	elif 'ForkEvent' == record_d['type']:
-		forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
+	# elif 'ForkEvent' == record_d['type']:
+	# 	forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
 
 	# elif 'CreateEvent' == record_d['type']:
 	# 	refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)

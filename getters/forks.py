@@ -34,15 +34,25 @@ def parse_forkee(forkee):
 	else:
 		raise Exception("'forkee' is not a dict or int!")	
 
-def get_forked_repo_name(json_payload, record_d):
+def get_forked_repo_name(json_payload, record_d, repo_name):
 	try:
 		if 'forkee' in record_d:
 			return parse_forkee(record_d['forkee'])
 		elif 'forkee' in json_payload:
 			return parse_forkee(json_payload['forkee'])
 		else:
+			user_name , repo_name = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
+			if 'actor' in record_d:
+				if isinstance(record_d['actor'], str):
+					return record_d['actor'] + '/' + repo_name
+				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
+				raise Exception("'actor' is in record_d, but is not a string")
+			if 'actor' in json_payload:
+				if isinstance(json_payload['actor'], str):
+					return json_payload['actor'] + '/' + repo_name
+				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
+				raise Exception("'actor' is in json_payload, but is not a string")
 			raise Exception("'forkee' not in record_d or json_payload")
-
 	except Exception as e:
 		print('record_d: ' + str(record_d))
 		traceback.print_exc()
@@ -52,34 +62,52 @@ def get_forked_repo_name(json_payload, record_d):
 		exit(1)
 		
 def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
+	forkee_actor_name = None
+	forked_at = None
+	forked_repo_name = None
+	forked_repo_id = None
+	size = None
+
 	try:
 		try:
-			if isinstance(json_payload['forkee'], int):
+			if isinstance(json_payload['forkee'], str): 
 				forkee_actor_name = json_payload['actor']
-				if not isinstance(forkee_actor_name, str):
-					record_d['actor']['login']
-			else:
+
+			elif isinstance(json_payload['actor'], dict):
+				forkee_actor_name = json_payload['actor']['login']
+
+			elif isinstance(record_d['actor'], dict):
 				forkee_actor_name = record_d['actor']['login']
+			else:
+				print('record_d: ' + str(record_d))
+				raise Exception("if forkee is in json_payload, forkee is not a str. If actor is in record_d, record_d['actor'] isn't  a dict. If 'actor' is in record_d, record_d['actor'] is not a dict")
+
 		except KeyError as ke:
 			try:
-				forkee_actor_name = record_d['actor']
+				if isinstance(record_d['actor'], str):
+					forkee_actor_name = record_d['actor']
 			except KeyError as ke:
-				print('GET_FORKEVENT_KEYERROR: ' + str(ke))
-				forkee_actor_name = None
+				# print('GET_FORKEVENT_KEYERROR: ' + str(ke))
+				# forkee_actor_name = None
+
+				raise Exception('KEYERROR: forkee actor name not found')
 
 		try:
 			forked_at = record_d['created_at']
 		except KeyError as ke:
 			try:
 				if isinstance(json_payload['forkee'], int):
-					forked_at = None 
-				else:
+					forked_at = created_at
+				elif isinstance(json_payload['forkee'], dict):
 					forked_at = json_payload['forkee']['created_at']
+				else:
+					forked_at = created_at
+					# print('record_d: ' + str(record_d))
+					# raise Exception("If forkee is json_payload, forkee isn't an int. In addition, if forkee is in json_payload, forkee isn't a dict.")
 			except KeyError as ke:
-				forked_at = None
-
+				forked_at = created_at
 		try:
-			forked_repo_name = get_forked_repo_name(json_payload, record_d)
+			forked_repo_name = get_forked_repo_name(json_payload, record_d, repo_name)
 		except KeyError as ke:
 				forked_repo_name = None
 
@@ -105,6 +133,7 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 	except Exception as e:
 		size = None
 		traceback.print_exc()
+		print('record: ' + str(record_d))
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('FORKEVENT_EXCEPTION: ' + str(e))
