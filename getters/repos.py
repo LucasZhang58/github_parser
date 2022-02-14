@@ -28,7 +28,7 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 			repo_name = None
 
 		try:
-			repo_url = in_dict['url']          
+			repo_url = in_dict['url']
 		except KeyError as ke:
 			repo_url = None
 
@@ -48,58 +48,61 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 			repo_description = None
 
 		try:
-			repo_homepage = in_dict['homepage']            
+			repo_homepage = in_dict['homepage']
 		except KeyError as ke:
 			repo_homepage = None
 
 		try:
-			size = in_dict['size']          
+			size = in_dict['size']
 		except KeyError as ke:
 			size = None
 
 		try:
-			language = in_dict['language']             
+			language = in_dict['language']
 		except KeyError as ke:
 			language = None
 
 		try:
-			owner = in_dict['owner']['login']            
+			if isinstance(in_dict['owner'], dict):
+				owner = in_dict['owner']['login']
+			else:
+				raise KeyError
 		except KeyError as ke:
 			owner = None
 
 		try:
-			is_forked = in_dict['fork']                   
+			is_forked = in_dict['fork']
 		except KeyError as ke:
 			is_forked = None
 
 		try:
-			id = in_dict['id']   
+			id = in_dict['id']
 		except KeyError as ke:
 			id = None
 
 		try:
-			private = in_dict['private']        
+			private = in_dict['private']
 		except KeyError as ke:
 			private = None
 
 		try:
-			has_issues = in_dict['has_issues']                
+			has_issues = in_dict['has_issues']
 		except KeyError as ke:
 			has_issues = None
 
 		try:
-			has_downloads = in_dict['has_downloads']         
+			has_downloads = in_dict['has_downloads']
 		except KeyError as ke:
 			has_downloads = None
 
 		try:
-			has_wiki = in_dict['has_wiki']          
+			has_wiki = in_dict['has_wiki']
 		except KeyError as ke:
 			has_wiki = None
 	except Exception as e:
 		print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
 		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)     
+		print(frameinfo.filename, frameinfo.lineno)		
 		print('GET_REPO_EXCEPTION: ' + str(e))
 		exit(1)
 
@@ -108,7 +111,7 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 
 	repo_dict = {}
 	if repo_name:
-		repo_dict['repo_name'] = repo_name  
+		repo_dict['repo_name'] = repo_name	
 
 	if repo_url:
 		repo_dict['repo_url'] = repo_url 
@@ -117,7 +120,7 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 		repo_dict['repo_created_at'] = repo_created_at
 
 	if pushed_at:
-		repo_dict['pushed_at'] = pushed_at           
+		repo_dict['pushed_at'] = pushed_at			 
 
 	if repo_description:
 		repo_dict['repo_description'] = repo_description
@@ -158,7 +161,7 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION')
 		exit(1)
 
-	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)        
+	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)		   
 	if not full_repo_name:
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	

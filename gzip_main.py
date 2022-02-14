@@ -37,8 +37,9 @@ def main():
 	print("Collected %d gzipped files" % (len(gzip_file_list)))
 
 	args = [input_path, db]
-	mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
-
+	#mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
+	for f in gzip_file_list:
+		ghp.parse_gzip_file(f, args, None)
 ##############################
 # call the main function
 ##############################

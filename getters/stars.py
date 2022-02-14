@@ -17,21 +17,22 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 			actor = json_payload['actor']['login']
 		except KeyError:
 			try:
-				actor = record_d['actor']['login']
-			except KeyError:
-				try:
+				if isinstance(record_d['actor'], dict):
+					actor = record_d['actor']['login']
+				elif isinstance(record_d['actor_attributes'], dict):
 					actor = record_d['actor_attributes']['login']
-				except KeyError:
-					actor = None
+				else:
+					raise KeyError
+			except KeyError:
+				actor = None
 
-		try:
-			starred_at = created_at
-		except KeyError as ke:
-			starred_at = None
+		starred_at = created_at
+
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print('WATCHEVENT_EXCEPTION: ' + str(e))
+		print(frameinfo.filename, frameinfo.lineno)
+		print('WATCHEVENT_EXCEPTION: %s\njson_payload: %s\nrecord_d: %s' % \
+			(str(e), json_payload, record_d))
 		exit(1)
 
 	stars_dict = {'starred_at': starred_at}
