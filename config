@@ -1,0 +1,31 @@
+[Infrastructure]
+QUEUING = ProcessPool
+#QUEUING = Celery
+
+[DB]
+#Type = mongodb
+#Type = sqlite
+Type = redis
+#Type = rediscluster
+
+##################################
+# Distributed system
+##################################
+[Celery]
+CELERY_BROKER_URL = amqp://
+CELERY_RESULTS_BACKEND = rpc://
+
+##################################
+# Databases
+##################################
+[MongoDB]
+HOST = 'localhost'
+PORT = 27017
+NAME = 'gharchive'
+
+[Redis]
+PORT = 6379
+HOST = localhost
+
+[RedisCluster]
+NODES = [{"host": "192.168.1.244", "port": "6379"},{"host": "192.168.1.245", "port": "6379"},{"host": "192.168.1.223", "port": "6379"}]
