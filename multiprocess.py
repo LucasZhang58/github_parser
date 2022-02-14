@@ -1,41 +1,11 @@
 #########################################
 #####	 MULTIPROCESS.PY
-import signal
 import multiprocessing
 import os
 import re
 import sys
 
-###########################################################
-# Signal Handling
-###########################################################
-class Signal:
-	SIGINT = signal.SIGINT
-	SIGTERM = signal.SIGTERM
-
-	def __init__(self):
-		self.__caught = dict()
-
-	def install(self, siglist):
-		for signum in siglist:
-			self.__caught[signum] = False
-			signal.signal(signum, self.__handler)
-
-	def __handler(self, signum, frame):
-		self.__caught[signum] = True
-
-	def caught(self, signum=None):
-		if signum:
-			if signum in self.__caught:
-				return self.__caught[signum]
-			else:
-				return False
-
-		for signum in self.__caught.keys():
-			if self.__caught[signum]:
-				return True
-
-		return False
+import utils
 
 ###########################################################
 # Multiprocessing
@@ -67,8 +37,8 @@ def worker(inq, work_func, args:list):
 def start_parallel_workers(work_item_list:list, work_func, args:list=None):
 	try:
 		# register signal handler
-		signal = Signal()
-		signal.install([Signal.SIGINT, Signal.SIGTERM])
+		signal = utils.Signal()
+		signal.install([utils.Signal.SIGINT, utils.Signal.SIGTERM])
 
 		# multiprocessing
 		manager = multiprocessing.Manager()
