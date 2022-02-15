@@ -31,7 +31,11 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                 issue_id = None
                                 raise Exception('issue is not an int or a dict')
                 except KeyError as ke:
-                        issue_id = None
+                        try:
+                                if isinstance(json_payload['issue'], int):
+                                        issue_id = json_payload['issue']
+                        except KeyError as ke:
+                                issue_id = None
                 try:    #Get issue_created_at when action is equal to open
                         if record_d['action'] == 'opened' and isinstance(record_d['issue'], dict):
                                 issue_created_at = record_d['issue']['created_at']
