@@ -26,30 +26,32 @@ def get_repo_from_forkee(forkee):
 
 	raise Exception("'/' is not in forked_repo_name, and 'url' is not in record_d['forkee']")	
 
-def parse_forkee(forkee):
+def parse_forkee(forkee, json_payload, record_d, repo_name):
 	if isinstance(forkee, dict):
 		return get_repo_from_forkee(forkee)
 	elif isinstance(forkee, int):
-		raise Exception("'forkee' is of type int!")
+		user_name_string , repo_name_string = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
+		return repo_name_string
+		#raise Exception("'forkee' is of type int!")
 	else:
 		raise Exception("'forkee' is not a dict or int!")	
 
 def get_forked_repo_name(json_payload, record_d, repo_name):
 	try:
 		if 'forkee' in record_d:
-			return parse_forkee(record_d['forkee'])
+			return parse_forkee(record_d['forkee'], json_payload, record_d, repo_name)
 		elif 'forkee' in json_payload:
-			return parse_forkee(json_payload['forkee'])
+			return parse_forkee(json_payload['forkee'], json_payload, record_d, repo_name)
 		else:
-			user_name , repo_name = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
+			user_name_string , repo_name_string = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
 			if 'actor' in record_d:
 				if isinstance(record_d['actor'], str):
-					return record_d['actor'] + '/' + repo_name
+					return record_d['actor'] + '/' + repo_name_string
 				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
 				raise Exception("'actor' is in record_d, but is not a string")
 			if 'actor' in json_payload:
 				if isinstance(json_payload['actor'], str):
-					return json_payload['actor'] + '/' + repo_name
+					return json_payload['actor'] + '/' + repo_name_string
 				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
 				raise Exception("'actor' is in json_payload, but is not a string")
 			raise Exception("'forkee' not in record_d or json_payload")

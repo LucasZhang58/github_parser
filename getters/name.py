@@ -97,11 +97,11 @@ def get_full_repo_name_helper(record_d, r):
 
 def get_full_repo_name(json_payload, record_d, repo_name):
         # check for repo and repository in a record
-
         if ('repo' in record_d) and ('repository' in record_d):
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
                 print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION')
+                exit(1)
 
         elif '/' in repo_name:
                 return repo_name
