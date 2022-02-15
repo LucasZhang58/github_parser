@@ -33,7 +33,7 @@ class Config():
         if not self.__configParser:
             return None
         try:
-            return self.__configParser.get(sec, opt, default)
+            return self.__configParser.get(sec, opt)
         except Exception as e:
             traceback.print_exc()
             #raise Exception("Error getting config for " + \
