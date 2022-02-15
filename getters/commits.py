@@ -15,12 +15,11 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
 		# author name
 		try:
 			if len(json_payload['commits']) != 0:
-				try:
-					if isinstance(json_payload['commits'], list):
-						
-						if isinstance(json_payload['commits'][0], dict):
-							if isinstance(json_payload['commits'][0]['author'], dict):
-								author_name = json_payload['commits'][0]['author']['name']
+				if isinstance(json_payload['commits'], list):
+					
+					if isinstance(json_payload['commits'][0], dict):
+						if isinstance(json_payload['commits'][0]['author'], dict):
+							author_name = json_payload['commits'][0]['author']['name']
 					
 			else:
 				author_name = None

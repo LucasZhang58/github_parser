@@ -87,9 +87,6 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 				if isinstance(record_d['actor'], str):
 					forkee_actor_name = record_d['actor']
 			except KeyError as ke:
-				# print('GET_FORKEVENT_KEYERROR: ' + str(ke))
-				# forkee_actor_name = None
-
 				raise Exception('KEYERROR: forkee actor name not found')
 
 		try:
@@ -106,10 +103,8 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 					# raise Exception("If forkee is json_payload, forkee isn't an int. In addition, if forkee is in json_payload, forkee isn't a dict.")
 			except KeyError as ke:
 				forked_at = created_at
-		try:
-			forked_repo_name = get_forked_repo_name(json_payload, record_d, repo_name)
-		except KeyError as ke:
-				forked_repo_name = None
+		
+		forked_repo_name = get_forked_repo_name(json_payload, record_d, repo_name)
 
 		try:
 			forked_repo_id = record_d['repo']['id']
@@ -210,10 +205,7 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 			try:
 				p_dict = record_d['actor']
 			except KeyError as ke:
-				frameinfo = getframeinfo(currentframe())
-				print(frameinfo.filename, frameinfo.lineno)	
-				print('KEYERROR FORKEVENT_EXCEPTION: ' + str(e))
-				exit(1)
+				raise Exception(str(ke))
 
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())

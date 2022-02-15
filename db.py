@@ -87,6 +87,15 @@ class Database:
 		return converted_data
 
 	##################################################################
+	# decode from bytes to str
+	##################################################################
+	def decode_redis(self, src):
+		if isinstance(src, list) or isinstance(src, set):
+			return [ item.decode('utf-8') for item in src ]
+		if isinstance(src, dict):
+			return { k.decode('utf-8'): v.decode('utf-8') for k,v in src.items() }
+		return src
+	##################################################################
 	# Add GitHub user data
 	##################################################################
 	def add_user(self, user_name_string, data_dict):
@@ -104,19 +113,40 @@ class Database:
 			exit(1)
 
 	##################################################################
-	# Get all repos
+	# Get repos
 	##################################################################
-	def get_repos(self):
+	def get_all_repos(self):
 		try:
 			key_pattern = 'repo%*'
 
 			for batch in self.__get_matching_batches(key_pattern):
 				for idx, val in utils.for_each_item_int(list(batch)):
-					print(val)
+					if not val:
+						continue
+					val = val.decode('utf-8')
+					if not val.startswith('repo%'):
+						raise Exception('Invalid repo name %s!' % (val))
+					yield val.replace('repo%','')
 		except Exception as e:
 			traceback.print_exc()
 			raise Exception("Failed to get all repos from DB: %s!" % (str(e)))
-		
+
+	def get_repo(self, repo_fullname):
+		try:
+			val = self.__rc.hgetall('repo%' + repo_fullname)
+			return self.decode_redis(val)
+		except Exception as e:
+			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
+
+	def get_data(self, repo_fullname, data_type):
+		try:
+			key = repo_fullname + '%' + data_type
+			val = self.__rc.smembers(key)
+			return self.decode_redis(val)
+		except Exception as e:
+			raise Exception('Failed to get repo %s data on %s: %s' % \
+				(repo_fullname, data_type, str(e)))
+
 	##################################################################
 	# Add GitHub repo data
 	##################################################################
@@ -169,7 +199,15 @@ def test():
 	size = db.size()
 	print(size)
 
-	db.get_repos()
+	for repo_fullname in db.get_all_repos():
+		repo_data = db.get_repo(repo_fullname)
+		print(repo_data)
+		#for star in db.get_data(repo_fullname, 'stars'):
+		#	print(star)
+		#for fork in db.get_data(repo_fullname, 'forks'):
+		#	print(fork)
+		#for release in db.get_data(repo_fullname, 'releases'):
+		#	print(release)
 
 ##################################################################
 # Main

@@ -23,7 +23,6 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 			elif isinstance(json_payload['actor'], dict):
 				actor = json_payload['actor']['login']
 			else:
-				# print('record_d: ' + str(record_d))
 				raise KeyError("KEYERROR: json_payload['actor'] is not a str or dict")
 		except KeyError:
 				if isinstance(record_d['actor'], str):
@@ -33,10 +32,11 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 				elif isinstance(record_d['actor_attributes'], dict):
 					actor = record_d['actor_attributes']['login']
 				else:
-					# print('record_d: ' + str(record_d))
 					raise Exception("Exception: json_payload['actor'] is not a str or dict")
-		# acttor_gravatar
+
 		starred_at = created_at
+
+		# acttor_gravatar
 		try:
 			if isinstance(record_d['actor'], dict):
 				actor_gravatar = record_d['actor']['actor_gravatar']
