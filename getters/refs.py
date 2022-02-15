@@ -55,7 +55,9 @@ def get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_
                                                 branch_name, record_created_at = get_attributes(json_payload, record_d)
                                                 ref_helper(repo_name, created_at, record_d, json_payload, db, branch_name, record_created_at, ref_past_repo_names, 'branch')
                                 except KeyError as ke:
-                                        pass
+                                        frameinfo = getframeinfo(currentframe())
+                                        print(frameinfo.filename, frameinfo.lineno)	
+                                        print('record_d: ' + str(record_d) + ' KEYERROR: ' + print(ke))
 
                 try:
                         if json_payload['ref_type'] == 'tag':
@@ -72,7 +74,9 @@ def get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_
                                                 branch_name, record_created_at = get_attributes(json_payload, record_d)
                                                 ref_helper(repo_name, created_at, record_d, json_payload, db, branch_name, record_created_at, ref_past_repo_names, 'branch')	
                                 except KeyError as ke:
-                                        pass
+                                        frameinfo = getframeinfo(currentframe())
+                                        print(frameinfo.filename, frameinfo.lineno)	
+                                        print('record_d: ' + str(record_d) + ' KEYERROR: ' + print(ke))
 
                 try:
                         if json_payload['ref_type'] == 'repository':
@@ -89,7 +93,9 @@ def get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_
                                                 branch_name, record_created_at = get_attributes(json_payload, record_d)
                                                 ref_helper(repo_name, created_at, record_d, json_payload, db, branch_name, record_created_at, ref_past_repo_names, 'branch')	
                                 except KeyError as ke:
-                                        pass
+                                        frameinfo = getframeinfo(currentframe())
+                                        print(frameinfo.filename, frameinfo.lineno)	
+                                        print('record_d: ' + str(record_d) + ' KEYERROR: ' + print(ke))
         except Exception as e:
                 print('record_d: ' + str(record_d) + ' is of type ' + str(record_d))
                 frameinfo = getframeinfo(currentframe())
@@ -175,7 +181,18 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, type_name, rec
                                 print("record_d: " + str(record_d))
                                 print("HAVEN'T FOUND P_DICT")
                 except KeyError as ke:
-                        exit(1)
+                        # try:
+                        #         p_dict = record_d['actor']
+                        # except KeyError as ke:
+                        p_dict = {
+                                'login' : record_d['actor']
+                        }
+                        print('KEYERROR: ' + str(ke))
+                        # frameinfo = getframeinfo(currentframe())
+                        # print(frameinfo.filename, frameinfo.lineno)	
+                        print('record_d: ' + str(record_d))
+                        traceback.print_exc(0)
+                        # exit(1)
                 except Exception as e:
                         frameinfo = getframeinfo(currentframe())
                         print(frameinfo.filename, frameinfo.lineno)	

@@ -31,8 +31,8 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
 	elif 'ForkEvent' == record_d['type']:
 		forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
 
-	# elif 'CreateEvent' == record_d['type']:
-	# 	refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
+	elif 'CreateEvent' == record_d['type']:
+		refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
 	# elif 'IssuesEvent' == record_d['type']:
 	# 	pass
