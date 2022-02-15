@@ -64,7 +64,9 @@ def get_Person(repo_name, created_at, json_payload, record_d, in_dict, db):
 		'url' : url
 	}
 
-	user_name_string = name.get_user_name_string(json_payload, record_d)
+	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
+
+	user_name_string = name.get_user_name_string(json_payload, record_d, full_repo_name)
 	# save in the database
 	try:
 		db.add_user(user_name_string, person_dict)

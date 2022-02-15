@@ -40,7 +40,7 @@ def main():
 	print("Collected %d gzipped files" % (len(gzip_file_list)))
 
 	cfg = config.Config()
-	mode = None #cfg.get("QUEUING", "Infrastructure")
+	mode = 'ProcessPool' #cfg.get("QUEUING", "Infrastructure")
 
 	args = [input_path, db]
 	if mode == "ProcessPool":
