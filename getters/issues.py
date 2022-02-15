@@ -14,64 +14,96 @@ import name
 
 def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
         issue_id = None	   
+        issue_created_at = None
+        issue_closed_at = None
+        description = None
+        user = None
         try:
-                try:
-                        if isinstance(json_payload['issue'], int):
+                try:    #get issue ID
+                        if isinstance(record_d['issue'], int):
+                                issue_id = record_d['issue']
+                        elif isinstance(record_d['issue'], dict):
+                                issue_id = record_d['issue']['issue_id']
+                        elif isinstance(json_payload['issue'], int):
                                 issue_id = json_payload['issue']
                         else:
-                                issue_id = json_payload['issue']['issue_id']
+                                print('record_d: ' + str(record_d))
+                                issue_id = None
+                                raise Exception('issue is not an int or a dict')
                 except KeyError as ke:
                         issue_id = None
-                try:
-                        if json_payload['action'] == 'opened' and isinstance(json_payload['issue'], dict):
-                                issue_created_at = json_payload['issue']['created_at']
+                try:    #Get issue_created_at when action is equal to open
+                        if record_d['action'] == 'opened' and isinstance(record_d['issue'], dict):
+                                issue_created_at = record_d['issue']['created_at']
+                        elif record_d['action'] == 'opened' and isinstance(record_d['milesone'], dict):
+                                issue_created_at = record_d['milestone']['created_at']
                         else:
                                 issue_created_at = None
                 except KeyError as ke:
                         issue_created_at = None
-                try:
-                        if json_payload['action'] == 'closed' and isinstance(json_payload['issue'], dict):
-                                closed_at = json_payload['issue']['created_at']
-                except KeyError as ke:
-                        closed_at = None
-                        description = None
-                try:
-                        description = json_payload['body']
-                except KeyError as ke:
-                        description = None
-                        user = None
-                try:
-                        if 'user' in str(json_payload):
-                                user = json_payload['user']['issue_id']
+
+                try:  #Get issue_closed_at when action is equal to closed
+                        if record_d['action'] == 'closed' and isinstance(record_d['issue'], dict):
+                                issue_closed_at = record_d['issue']['created_at']
+
+                        elif record_d['action'] == 'closed' and isinstance(record_d['milestone'], dict):
+                                issue_closed_at = record_d['milestone']['created_at']
+                                
                         else:
-                                user = None
+                                issue_closed_at = None
+                               # raise Exception('issue_closed_at is nethier in record_d["issue"] not record_d["milestone"]')
                 except KeyError as ke:
-                        try:
-                                if isinstance(json_payload['issue'], dict):
-                                        user = json_payload['issue']['user']['issue_id']
-                        except KeyError as ke:
-                                print('json_payload: ' + str(json_payload))
-                                user = None
-                                assignee = None
-                try:
-                        if 'assignee' in str(json_payload):
-                                assignee = json_payload['assignee']
-                        else:
-                                assignee = None
+                        issue_closed_at = None
+
+                try:    # get description
+                        description = record_d['body']
                 except KeyError as ke:
-                        try:
-                                assignee = json_payload['issue']['assignee']
-                        except KeyError as ke:
-                                assignee = None
-                                title = None
-                try:
-                        if isinstance(json_payload['issue'], dict):
-                                title = json_payload['issue']['title']
-                except KeyError as ke:
-                        try:
-                                if 'title' in str(json_payload):
-                                        title = json_payload['title']
+                        description = None
+
+                try:    # get user
+                        if 'user' in record_d:
+                                if isinstance(record_d['user'], dict):
+                                        user = record_d['user']['id']
+                        elif 'user' in record_d['issue']:
+                                if isinstance(record_d['issue'], dict):
+                                        if isinstance(record_d['issue']['user'], dict):
+                                                user = record_d['issue']['user']['id']
+                                        else:
+                                                print('record_d: ' + str(record_d))
+                                                print("record_d['issue']['user'] is not a dict")
                                 else:
+                                        print('record_d: ' + str(record_d))
+                                        print("record_d['issue'] is not a dict")
+
+                        else:   
+                                print("Seems like record_d doesn't contain user_id record_d: " + str(record_d))
+                                user = None
+                except KeyError as ke:
+                        user = None
+                        try:
+                                if isinstance(record_d['issue'], dict):
+                                        if isinstance(record_d['issue']['assignee'], dict):
+                                                assignee = record_d['issue']['assignee']['id']
+                                        else:
+                                                print('record_d: ' + str(record_d))
+                                                print("record_d['issue']['assignee'] is not a dict")
+                                else:
+                                        print('record_d: ' + str(record_d))
+                                        print("record_d['issue'] is not a dict")
+                                        assignee = None
+
+                        except KeyError as ke:
+                                assignee = None
+                try:    # get title
+                        if isinstance(record_d['issue'], dict):
+                                title = record_d['issue']['title']
+                except KeyError as ke:
+                        try:
+                                if 'title' in record_d:
+                                        title = record_d['title']
+                                else:
+                                        # print('record_d: ' + str(record_d))
+                                        # print("it looks like title isn't in record_d")
                                         title = None
                         except KeyError as ke:
                                 title = None
@@ -86,8 +118,8 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
         if issue_id:
                 issues_dict['ID'] = issue_id
 
-        if closed_at:
-                issues_dict['closed_at'] = closed_at
+        if issue_closed_at:
+                issues_dict['closed_at'] = issue_closed_at
 
         if description:
                 issues_dict['description'] = description
