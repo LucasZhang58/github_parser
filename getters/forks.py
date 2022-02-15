@@ -30,11 +30,24 @@ def parse_forkee(forkee, json_payload, record_d, repo_name):
 	if isinstance(forkee, dict):
 		return get_repo_from_forkee(forkee)
 	elif isinstance(forkee, int):
-		user_name_string , repo_name_string = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
-		return repo_name_string
+		return use_full_repo_name(json_payload, record_d, repo_name)
 		#raise Exception("'forkee' is of type int!")
 	else:
 		raise Exception("'forkee' is not a dict or int!")	
+
+def use_full_repo_name(json_payload, record_d, repo_name):
+	user_name_string , repo_name_string = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
+	if 'actor' in record_d:
+		if isinstance(record_d['actor'], str):
+			return record_d['actor'] + '/' + repo_name_string
+		print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
+		raise Exception("'actor' is in record_d, but is not a string")
+	if 'actor' in json_payload:
+		if isinstance(json_payload['actor'], str):
+			return json_payload['actor'] + '/' + repo_name_string
+		print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
+		raise Exception("'actor' is in json_payload, but is not a string")
+	raise Exception("'forkee' not in record_d or json_payload")
 
 def get_forked_repo_name(json_payload, record_d, repo_name):
 	try:
@@ -43,18 +56,7 @@ def get_forked_repo_name(json_payload, record_d, repo_name):
 		elif 'forkee' in json_payload:
 			return parse_forkee(json_payload['forkee'], json_payload, record_d, repo_name)
 		else:
-			user_name_string , repo_name_string = (name.get_full_repo_name(json_payload, record_d, repo_name)).split('/')
-			if 'actor' in record_d:
-				if isinstance(record_d['actor'], str):
-					return record_d['actor'] + '/' + repo_name_string
-				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-				raise Exception("'actor' is in record_d, but is not a string")
-			if 'actor' in json_payload:
-				if isinstance(json_payload['actor'], str):
-					return json_payload['actor'] + '/' + repo_name_string
-				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-				raise Exception("'actor' is in json_payload, but is not a string")
-			raise Exception("'forkee' not in record_d or json_payload")
+			return use_full_repo_name(json_payload, record_d, repo_name)
 	except Exception as e:
 		print('record_d: ' + str(record_d))
 		traceback.print_exc()
