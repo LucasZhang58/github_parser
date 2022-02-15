@@ -1,4 +1,5 @@
 [Infrastructure]
+#QUEUING = SingleProcess
 QUEUING = ProcessPool
 #QUEUING = Celery
 

@@ -127,37 +127,25 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, type_name, rec
 					p_dict = record_d['actor_attributes']
 					persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
 			else:
-				print("record_d: " + str(record_d))
 				raise Exception("HAVEN'T FOUND P_DICT")
+
 		except KeyError as ke:
-			# try:
-			#         p_dict = record_d['actor']
-			# except KeyError as ke:
-			p_dict = {
-				'login' : record_d['actor']
-			}
-			print('KEYERROR: ' + str(ke))
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('record_d: ' + str(record_d))
-			traceback.print_exc(0)
-			exit(1)
-		except Exception as e:
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('ERROR CREATEEVENT_EXCEPTION: ' + str(e))
-			traceback.print_exc()
-			exit(1)
+			if 'actor' in record_d:
+				p_dict = {
+					'login' : record_d['actor']
+				}
+			else:
+				raise Exception('KEYERROR: ' + str(ke))
 
 		full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
 
 		if isinstance(p_dict, dict):
 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
 		else:
-			print('p_dict: ' + str(p_dict))
-			print('P_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
+			raise Exception('P_DICT (%s) IS NOT A DICT!' % (str(p_dict)))
+
 	except Exception as e:
-		print('record_d: ' + str(record_d) + ' is of type ' + str(record_d))
+		print('record_d (%s): %s' % (type(record_d), str(record_d)))
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('ref_helper CREATEEVENT_EXCEPTION: ' + str(e))

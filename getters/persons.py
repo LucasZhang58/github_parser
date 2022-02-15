@@ -16,57 +16,66 @@ def get_Person(repo_name, created_at, json_payload, record_d, in_dict, db):
 	login = None
 	id = None
 	avatar_url = None
-	type = None
+	user_type = None
 	gravatar_id = None
 	url = None
+
 	try:
 		try:
 			login = in_dict['login']
 		except KeyError as ke:
-			login = None
+			#raise Exception("User name ('login') info not available!")
+			return
+
 		try:
-			id = in_dict['id']
+			user_id = in_dict['id']
 		except KeyError as ke:
-			id = None
+			user_id = None
+
 		try:
 			avatar_url = in_dict['avatar_url']
 		except KeyError as ke:
 			avatar_url = None
+
 		try:
-			type = in_dict['type']
+			user_type = in_dict['user_type']
 		except KeyError as ke:
 			try:
-				type = list(in_dict.keys())[0]
+				user_type = list(in_dict.keys())[0]
 			except KeyError as ke:
-				type = None
+				user_type = None
 		try:
 			gravatar_id = in_dict['gravatar_id']
 		except KeyError as ke:
 			gravatar_id = None
+
 		try:
 			url = in_dict['url']
 		except KeyError as ke:
 			url = None
+
 	except Exception as e:
 		url = None
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
+		print(record_d)
 		print('PERSONEVENT_EXCEPTION: ' + str(e))
 		traceback.print_exc()
 		exit(1)
 				
 	person_dict = {
-		'login' : login,
-		'id' : id,
-		'avatar_url' : avatar_url,
-		'type' : type,
-		'gravatar_id' : gravatar_id,
-		'url' : url
+		'login'			: login,
+		'id'			: user_id,
+		'avatar_url'	: avatar_url,
+		'type'			: user_type,
+		'gravatar_id'	: gravatar_id,
+		'url'			: url
 	}
 
 	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
 
 	user_name_string = name.get_user_name_string(json_payload, record_d, full_repo_name)
+
 	# save in the database
 	try:
 		db.add_user(user_name_string, person_dict)
@@ -76,4 +85,3 @@ def get_Person(repo_name, created_at, json_payload, record_d, in_dict, db):
 		traceback.print_exc()
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)
-

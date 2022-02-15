@@ -39,13 +39,18 @@ def main():
 
 	print("Collected %d gzipped files" % (len(gzip_file_list)))
 
-	cfg = config.Config()
-	mode = 'ProcessPool' #'ProcessPool' #cfg.get("QUEUING", "Infrastructure")
+	try:
+		cfg = config.Config()
+		mode = cfg.get("QUEUING", sec="Infrastructure")
+	except Exception as e:
+		print("Failed to get config parser and mode: %s!" % (str(e)))
+		traceback.print_exc()
+		exit(1)
 
 	args = [input_path, db]
 	if mode == "ProcessPool":
 		mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
-	else:
+	elif mode == "SingleProcess":
 		for f in gzip_file_list:
 			ghp.parse_gzip_file(f, args, None)
 
