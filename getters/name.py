@@ -2,7 +2,6 @@ import html
 from lib2to3.pgen2.token import SLASH
 from nturl2path import url2pathname
 from platform import release
-from time import thread_time
 import traceback
 import json
 import os
