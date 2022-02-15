@@ -42,9 +42,9 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                         elif record_d['action'] == 'opened' and isinstance(record_d['milesone'], dict):
                                 issue_created_at = record_d['milestone']['created_at']
                         else:
-                                issue_created_at = None
+                                issue_created_at = created_at
                 except KeyError as ke:
-                        issue_created_at = None
+                        issue_created_at = created_at
 
                 try:  #Get issue_closed_at when action is equal to closed
                         if record_d['action'] == 'closed' and isinstance(record_d['issue'], dict):
@@ -54,10 +54,14 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                 issue_closed_at = record_d['milestone']['created_at']
                                 
                         else:
-                                issue_closed_at = None
+                                if issue_created_at['action'] == 'closed':
+                                        issue_closed_at = created_at
                                # raise Exception('issue_closed_at is nethier in record_d["issue"] not record_d["milestone"]')
                 except KeyError as ke:
-                        issue_closed_at = None
+                        if issue_created_at['action'] == 'closed':
+                                issue_closed_at = created_at
+                        else:
+                                issue_closed_at = None
 
                 try:    # get description
                         description = record_d['body']

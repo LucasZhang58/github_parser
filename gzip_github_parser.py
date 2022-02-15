@@ -34,20 +34,20 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
 	# elif 'CreateEvent' == record_d['type']:
 	# 	refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
-	if 'IssuesEvent' == record_d['type']:
-		#pass
-		# TODO enable this
-		issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
+	# if 'IssuesEvent' == record_d['type']:
+	# 	#pass
+	# 	# TODO enable this
+	# 	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
 	# elif 'PushEvent' == record_d['type']:
 	# 	pass
 	# 	# TODO enable this
 	# 	commits.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
-	# elif 'MemberEvent' == record_d['type']:
-	# 	pass
-	# 	# TODO enable this
-	# 	#members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, record_d, member_past_repo_names, member_dict)
+	if 'MemberEvent' == record_d['type']:
+	#	pass
+		# TODO enable this
+		members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
 
 	# # skip these events
 	# elif record_d['type'] in ['IssueCommentEvent', 'PullRequestEvent', 'PullRequestReviewCommentEvent', 'GollumEvent', 'CommitCommentEvent']:

@@ -194,6 +194,22 @@ class Database:
                         print(frameinfo.filename, frameinfo.lineno)
                         exit(1)
 
+        ##################################################################
+        # Add Member
+        ##################################################################
+
+        def add_member(self, full_repo_name, user_name_string):
+                try:
+                        key = full_repo_name + '%'+ 'members'
+                        self.__rc.sadd(key, user_name_string)
+                except Exception as e:
+                        print('ERROR: ' + str(e))
+                        traceback.print_exc()
+                        frameinfo = getframeinfo(currentframe())
+                        print(frameinfo.filename, frameinfo.lineno)
+                        exit(1)
+
+
 ##################################################################
 # unit test
 ##################################################################
