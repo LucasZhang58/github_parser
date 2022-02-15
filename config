@@ -1,5 +1,5 @@
 [Infrastructure]
-QUEUING = ProcessPool
+#QUEUING = ProcessPool
 #QUEUING = Celery
 
 [DB]
@@ -26,6 +26,7 @@ NAME = 'gharchive'
 [Redis]
 PORT = 6379
 HOST = localhost
+DATABASE = 0
 
 [RedisCluster]
 NODES = [{"host": "192.168.1.244", "port": "6379"},{"host": "192.168.1.245", "port": "6379"},{"host": "192.168.1.223", "port": "6379"}]

@@ -29,11 +29,11 @@ class Config():
             traceback.print_exc()
             raise Exception("Error parsing " + file_path + ": " + str(e))
 
-    def get(self, opt, sec="Main"):
+    def get(self, opt, sec="Main", default=None):
         if not self.__configParser:
             return None
         try:
-            return self.__configParser.get(sec, opt)
+            return self.__configParser.get(sec, opt, default)
         except Exception as e:
             traceback.print_exc()
             #raise Exception("Error getting config for " + \

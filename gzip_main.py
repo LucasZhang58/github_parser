@@ -5,6 +5,8 @@ import traceback
 from db import Database
 import multiprocess as mp
 
+import config
+
 ##############################
 # main function
 ##############################
@@ -37,10 +39,15 @@ def main():
 
 	print("Collected %d gzipped files" % (len(gzip_file_list)))
 
+	cfg = config.Config()
+	mode = cfg.get("QUEUING", sec="Infrastructure", default=None)
+
 	args = [input_path, db]
-	#mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
-	for f in gzip_file_list:
-		ghp.parse_gzip_file(f, args, None)
+	if mode == "ProcessPool":
+		mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
+	else:
+		for f in gzip_file_list:
+			ghp.parse_gzip_file(f, args, None)
 
 ##############################
 # call the main function

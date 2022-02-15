@@ -19,9 +19,10 @@ class Database:
 			db_type = cfg.get('Type', 'DB')
 			if db_type == "redis":
 				import redis
-				self.__host = cfg.get("HOST", "Redis")
-				self.__port = cfg.get("PORT", "Redis")
-				self.__db = cfg.get("DATABASE", 0)
+				self.__host = cfg.get("HOST", sec="Redis", default="localhost")
+				self.__port = cfg.get("PORT", sec="Redis", default="6379")
+				self.__db = cfg.get("DATABASE", sec="Redis", default="0")
+
 				self.__rc = redis.StrictRedis(host=self.__host, port=self.__port, db=self.__db)
 			elif db_type == "rediscluster":
 				import json
