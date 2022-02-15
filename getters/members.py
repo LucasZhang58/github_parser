@@ -28,5 +28,6 @@ def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_pa
 	except Exception as e:
 		print("Failed to save %s MemberEvent record at %s: %s" % \
 				(full_repo_name, created_at, str(e)))
+		traceback.print_exc()
 	
 

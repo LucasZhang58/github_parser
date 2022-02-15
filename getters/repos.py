@@ -159,6 +159,7 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION')
+		traceback.print_exc()
 		exit(1)
 
 	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)		   
@@ -166,6 +167,7 @@ def get_Repo(repo_name, created_at, json_payload, record_d, in_dict, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('full_repo_name is None')
+		traceback.print_exc()
 		exit(1)
 
 	# save in the database

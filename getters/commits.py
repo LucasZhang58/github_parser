@@ -46,6 +46,7 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('PUSHEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	commit = {'commited_at' : created_at}

@@ -53,6 +53,7 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('RELEASEEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	# all assets
@@ -98,6 +99,7 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 				frameinfo = getframeinfo(currentframe())
 				print(frameinfo.filename, frameinfo.lineno)	
 				print('RELEASEEVENT_EXCEPTION: ' + str(e))
+				traceback.print_exc()
 				exit(1)
 
 		asset_out = {'asset_created_at' : asset_created_at}
@@ -141,6 +143,7 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('RELEASEEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 	
 	# releases_dict = {'created_at' : created_at}
@@ -181,6 +184,7 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('full_repo_name is None')
+		traceback.print_exc()
 		exit(1)
 
 	# save in the database		
@@ -212,6 +216,7 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(r_dict, dict):
@@ -238,6 +243,7 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(p_dict, dict):

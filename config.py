@@ -1,3 +1,4 @@
+import traceback
 #!/usr/bin/python
 
 #################################################################
@@ -25,6 +26,7 @@ class Config():
             raise Exception("configparser module not available. Please install")
 
         except Exception as e:
+            traceback.print_exc()
             raise Exception("Error parsing " + file_path + ": " + str(e))
 
     def get(self, opt, sec="Main"):
@@ -33,6 +35,7 @@ class Config():
         try:
             return self.__configParser.get(sec, opt)
         except Exception as e:
+            traceback.print_exc()
             #raise Exception("Error getting config for " + \
             #                    sec + " :" + cfg + ": " + str(e))
             return None

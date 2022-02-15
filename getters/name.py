@@ -87,6 +87,7 @@ def get_full_repo_name_helper(record_d, r):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('get_full_repo_name_helper PROBLEM %s: %s' % (str(full_repo_name), str(e)))
+		traceback.print_exc()
 		exit(1)
 
 def get_full_repo_name(json_payload, record_d, repo_name):
@@ -108,6 +109,7 @@ def get_full_repo_name(json_payload, record_d, repo_name):
 			return full_repo_name
 
 		else:
+			traceback.print_exc()
 			raise Exception("Failed to detect 'repo' and 'repository' in record_d!")
 
 	except Exception as e:
@@ -115,4 +117,5 @@ def get_full_repo_name(json_payload, record_d, repo_name):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('get_full_repo_name PROBLEM %s: %s' % (str(full_repo_name), str(e)))
+		traceback.print_exc()
 		exit(1)

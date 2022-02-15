@@ -40,6 +40,7 @@ class Database:
 		try:
 			return self.__rc.info()['used_memory']
 		except Exception as e:
+			traceback.print_exc()
 			raise Exception("Error dumping memory info: %s" % (str(e)))
 
 	##################################################################
@@ -50,6 +51,7 @@ class Database:
 		try:
 			return self.__rc.dbsize()
 		except Exception as e:
+			traceback.print_exc()
 			raise Exception("Error dumping index size: %s" % (str(e)))
 
 	##################################################################
@@ -112,6 +114,7 @@ class Database:
 				for idx, val in utils.for_each_item_int(list(batch)):
 					print(val)
 		except Exception as e:
+			traceback.print_exc()
 			raise Exception("Failed to get all repos from DB: %s!" % (str(e)))
 		
 	##################################################################

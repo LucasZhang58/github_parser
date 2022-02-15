@@ -79,6 +79,7 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
                 print('ISSUEEVENT_EXCEPTION: ' + str(e))
+                traceback.print_exc()
                 exit(1)
         
         issues_dict = {'issue_created_at' : issue_created_at}
@@ -108,4 +109,5 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
         except Exception as e:
                 print("Failed to save %s IssuesEvent record at %s: %s" % \
                                 (full_repo_name, created_at, str(e)))
+                traceback.print_exc()
 

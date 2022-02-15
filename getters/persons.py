@@ -52,6 +52,7 @@ def get_Person(repo_name, created_at, json_payload, record_d, in_dict, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('PERSONEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 				
 	person_dict = {

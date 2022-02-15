@@ -117,17 +117,12 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, branch_name, t
 	try:
 		r_dict = record_d['repo']
 	except KeyError as ke:
-		try:
 			r_dict = record_d['repository']
-		except Exception as ee:
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('CREATEEVENT_EXCEPTION: ' + str(ee))
-			exit(1)
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('CREATEEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(r_dict, dict):
@@ -137,17 +132,12 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, branch_name, t
 	try:
 		p_dict = record_d['actor']
 	except KeyError as ke:
-		try:
 			p_dict = record_d['actor_attributes']
-		except Exception as ee:
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('CREATEEVENT_EXCEPTION: ' + str(ee))
-			exit(1)
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('CREATEEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	user_name_string = name.get_user_name_string(json_payload, record_d)

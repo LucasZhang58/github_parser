@@ -1,7 +1,7 @@
 import os
 import sys
 import gzip_github_parser as ghp
-
+import traceback
 from db import Database
 import multiprocess as mp
 
@@ -26,20 +26,18 @@ def main():
 		db = Database()
 	except Exception as e:
 		print("Failed to get dbing manager: %s. Exiting!" % (str(e)))
+		traceback.print_exc()
 		exit(1)
 
-	# traverse dir struct
+	# collect the records
 	gzip_file_list = []
-	for root_dir, dirs, files in os.walk(input_path, topdown=False):
-		for file_name in files:
-			gzip_file_list.append(os.path.join(root_dir, file_name))
+	for gzip_file in os.listdir(input_path):
+		gzip_file_list.append(gzip_file)
 
 	print("Collected %d gzipped files" % (len(gzip_file_list)))
-
 	args = [input_path, db]
 	mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
-	# for f in gzip_file_list:
-	# 	ghp.parse_gzip_file(f, args, None)
+
 ##############################
 # call the main function
 ##############################

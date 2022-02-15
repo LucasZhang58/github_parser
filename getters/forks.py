@@ -195,6 +195,7 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('FORKEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(r_dict, dict):
@@ -218,6 +219,7 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('ERROR FORKEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(p_dict, dict):

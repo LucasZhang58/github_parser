@@ -105,6 +105,7 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('WATCHEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(r_dict, dict):
@@ -123,6 +124,7 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
+		traceback.print_exc()
 		exit(1)
 
 	if isinstance(p_dict, dict):
