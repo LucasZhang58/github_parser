@@ -90,7 +90,6 @@ def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_pa
 
 
 	#If memeber is of type user,call the get_Person function
-
 	try:
 
 		try:
