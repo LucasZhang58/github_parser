@@ -5,7 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
-from getters import persons, repos
+from getters import persons, repos, helpers
 import name
 
 ##########################
@@ -13,119 +13,126 @@ import name
 ##########################
 
 def get_Person(full_repo_name, created_at, json_payload, record_d, in_dict, db):
-	try:
+        try:
 
-		# String ID
-		try:
-			user_login = in_dict['login']
-		except KeyError:
-			if 'url' in in_dict:
-				user_login = name.url2actor(in_dict['url'])
+                # String ID
+                try:
+                        user_login = in_dict['login']
+                except KeyError:
+                        if 'url' in in_dict:
+                                user_login = name.url2actor(in_dict['url'])
 
-		# validation: absolutely mandatory field
-		if not user_login:
-			#raise Exception("User name ('login') info not available!")
-			return
+                # validation: absolutely mandatory field
+                if not user_login:
+                        #raise Exception("User name ('login') info not available!")
+                        return
 
-		# Type: can be either 'User' or 'Organization'
-		try:
-			user_type = in_dict['type']
-		except KeyError:
-			user_type = 'User' # TODO check this
+                # Type: can be either 'User' or 'Organization'
+                try:
+                        user_type = in_dict['type']
+                except KeyError:
+                        user_type = helpers.get_user_type_from_url(in_dict)
 
-		# Integer ID
-		try:
-			user_id = in_dict['id']
-		except KeyError:
-			user_id = None
+                if user_type != 'user':
+                        print('user_type: ' + str(user_type))
+                        raise Exception('user_type is not org!')
+                        # print('in_dict: ' + str(in_dict))
+                        # print('record_d: ' + str(record_d))
+                        # user_type = 'org' # TODO check this
 
-		# Name
-		try:
-			user_name = in_dict['name']
-		except KeyError:
-			user_name = None
+                # Integer ID
+                try:
+                        user_id = in_dict['id']
+                except KeyError:
+                        user_id = None
 
-		# Email
-		try:
-			user_email = in_dict['email']
-		except KeyError:
-			user_email = None
+                # Name
+                try:
+                        user_name = in_dict['name']
+                except KeyError:
+                        user_name = None
 
-		# Company
-		try:
-			user_company = in_dict['company']
-		except KeyError:
-			user_company = None
+                # Email
+                try:
+                        user_email = in_dict['email']
+                except KeyError:
+                        user_email = None
 
-		# Location
-		try:
-			user_location = in_dict['location']
-		except KeyError:
-			user_location = None
+                # Company
+                try:
+                        user_company = in_dict['company']
+                except KeyError:
+                        user_company = None
 
-		# Avatar URL
-		try:
-			avatar_url = in_dict['avatar_url']
-		except KeyError:
-			avatar_url = None
+                # Location
+                try:
+                        user_location = in_dict['location']
+                except KeyError:
+                        user_location = None
 
-		# Gravatar ID
-		try:
-			gravatar_id = in_dict['gravatar_id']
-		except KeyError:
-			gravatar_id = None
+                # Avatar URL
+                try:
+                        avatar_url = in_dict['avatar_url']
+                except KeyError:
+                        avatar_url = None
 
-		# URL
-		try:
-			user_url = in_dict['url']
-		except KeyError:
-			user_url = None
+                # Gravatar ID
+                try:
+                        gravatar_id = in_dict['gravatar_id']
+                except KeyError:
+                        gravatar_id = None
 
-		# Blog
-		try:
-			user_blog = in_dict['blog']
-		except KeyError:
-			user_blog = None
+                # URL
+                try:
+                        user_url = in_dict['url']
+                except KeyError:
+                        user_url = None
 
-	except Exception as e:
-		url = None
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print(record_d)
-		print('PERSONEVENT_EXCEPTION: ' + str(e))
-		traceback.print_exc()
-		exit(1)
-				
-	person_dict = {
-		'login'			: user_login,
-		'type'			: user_type,
-	}
+                # Blog
+                try:
+                        user_blog = in_dict['blog']
+                except KeyError:
+                        user_blog = None
 
-	if user_id:
-		person_dict['id'] =  user_id
-	if avatar_url:
-		person_dict['avatar_url'] = avatar_url
-	if gravatar_id:
-		person_dict['gravatar_id'] = gravatar_id
-	if user_url:
-		person_dict['url'] = user_url
-	if user_company:
-		person_dict['company'] = user_company
-	if user_blog:
-		person_dict['blog'] = user_blog
-	if user_name:
-		person_dict['name'] = user_name
-	if user_location:
-		person_dict['location'] = user_location
-	if user_email:
-		person_dict['email'] = user_email
+        except Exception as e:
+                url = None
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print(record_d)
+                print('PERSONEVENT_EXCEPTION: ' + str(e))
+                traceback.print_exc()
+                exit(1)
+                                
+        person_dict = {
+                'login'			: user_login,
+                'type'			: user_type,
+        }
 
-	# save in the database
-	try:
-		db.add_user(user_login, person_dict)
-	except Exception as e:
-		print("Failed to save %s person data at %s: %s" % \
-				(full_repo_name, created_at, str(e)))
-		traceback.print_exc()
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)
+        if user_id:
+                person_dict['id'] =  user_id
+        if avatar_url:
+                person_dict['avatar_url'] = avatar_url
+        if gravatar_id:
+                person_dict['gravatar_id'] = gravatar_id
+        if user_url:
+                person_dict['url'] = user_url
+        if user_company:
+                person_dict['company'] = user_company
+        if user_blog:
+                person_dict['blog'] = user_blog
+        if user_name:
+                person_dict['name'] = user_name
+        if user_location:
+                person_dict['location'] = user_location
+        if user_email:
+                person_dict['email'] = user_email
+
+        # save in the database
+        try:
+                db.add_user(user_login, person_dict)
+        except Exception as e:
+                print("Failed to save %s person data at %s: %s" % \
+                                (full_repo_name, created_at, str(e)))
+                traceback.print_exc()
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)

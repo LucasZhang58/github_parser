@@ -5,7 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
-from getters import repos, persons
+from getters import repos, persons, orgs
 import getters.name as name
 
 ##########################
@@ -107,45 +107,55 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 		print('full_repo_name is None')
 		exit(1)
 
-	# save in the database
-	try:
-		db.add_data(full_repo_name, created_at, 'stars', stars_dict)
-	except Exception as e:
-		print('record_d: ' + str(record_d))
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)    
-		traceback.print_exc()
-		print("Failed to save %s WatchEvent record at %s: %s" % \
-				(full_repo_name, created_at, str(e)))
+	# # save in the database
+	# try:
+	# 	db.add_data(full_repo_name, created_at, 'stars', stars_dict)
+	# except Exception as e:
+	# 	print('record_d: ' + str(record_d))
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)    
+	# 	traceback.print_exc()
+	# 	print("Failed to save %s WatchEvent record at %s: %s" % \
+	# 			(full_repo_name, created_at, str(e)))
 
-	# check for repo and actor_attributes in a record
-	if 'repo' in record_d and 'repository' in record_d:
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
-		exit(1)
+	# # check for repo and actor_attributes in a record
+	# if 'repo' in record_d and 'repository' in record_d:
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)	
+	# 	print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
+	# 	exit(1)
 
-	try:
-		if 'repo' in record_d and isinstance(record_d['repo'], dict):
-			r_dict = record_d['repo']
-		elif 'repository' in record_d and isinstance(record_d['repository'], dict):
-			r_dict = record_d['repository']
+	# try:
+	# 	if 'repo' in record_d and isinstance(record_d['repo'], dict):
+	# 		r_dict = record_d['repo']
+	# 	elif 'repository' in record_d and isinstance(record_d['repository'], dict):
+	# 		r_dict = record_d['repository']
+	# 	else:
+	# 		raise Exception("'repository' or 'repo' not found in record_d!")
+
+	# except Exception as e:
+	# 	print('record_d: ' + str(record_d))
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)	
+	# 	traceback.print_exc()
+	# 	exit(1)
+
+	# if isinstance(r_dict, dict):
+	# 	repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+	# else:
+	# 	raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
+
+	# if isinstance(p_dict, dict):
+	# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# else:
+	# 	raise Exception("'p_dict' (%s) is not a dict!\n%s" % (p_dict, record_d))
+
+	if 'org' in record_d:
+		if isinstance(record_d['org'], dict):
+			orgs.get_Org(full_repo_name, created_at, json_payload, record_d, record_d['org'], db)
 		else:
-			raise Exception("'repository' or 'repo' not found in record_d!")
+			raise Exception("'org' (%s) is not a dict!\n%s" % (record_d['org'], record_d))
 
-	except Exception as e:
-		print('record_d: ' + str(record_d))
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		traceback.print_exc()
-		exit(1)
+		
 
-	if isinstance(r_dict, dict):
-		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
-	else:
-		raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
 
-	if isinstance(p_dict, dict):
-		persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
-	else:
-		raise Exception("'p_dict' (%s) is not a dict!\n%s" % (p_dict, record_d))

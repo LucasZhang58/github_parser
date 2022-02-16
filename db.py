@@ -113,6 +113,28 @@ class Database:
                         print(frameinfo.filename, frameinfo.lineno)
                         exit(1)
 
+
+        ##################################################################
+        # Add GitHub org data
+        ##################################################################
+        def add_org(self, user_login, data_dict):
+                try:
+                        key = 'org%' + user_login
+                        # print('key: ' + str(key))
+                        # print('data_dict: ' + str(data_dict))
+                        converted_data = self.convert_none_to_empty(data_dict)
+                        self.__rc.hmset(key, converted_data)
+                except Exception as e:
+                        # print('user_login: ' + str(user_login) + ' is of type ' + str(type(user_login)))
+                        # print('data_dict: ' + str(data_dict) + ' is of type ' + str(type(data_dict)))
+                        # print('converted_data: ' + str(converted_data) + ' is of type ' + str(type(converted_data)))
+                        # print('key: ' + str(key) + ' is of type ' + str(type(key)))
+                        print('ERROR: ' + str(e))
+                        traceback.print_exc()
+                        frameinfo = getframeinfo(currentframe())
+                        print(frameinfo.filename, frameinfo.lineno)
+                        exit(1)
+
         ##################################################################
         # Get repos
         ##################################################################

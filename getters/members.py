@@ -5,7 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
-from getters import persons, repos, orgs
+from getters import persons, repos, orgs, helpers
 import getters.name as name
 
 ##########################
