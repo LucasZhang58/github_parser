@@ -245,6 +245,12 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 				}
 			else:
 				raise Exception("'actor' of type %s" % (type(record_d['actor'])))
+	except Exception as e:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('FORKEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
+		exit(1)
 
 	# add to the db
 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)

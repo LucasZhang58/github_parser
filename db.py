@@ -239,8 +239,8 @@ def test():
 	#print(size)
 
 	for repo_fullname in db.get_all_repos():
-	repo_data = db.get_repo(repo_fullname)
-	print(repo_data)
+		repo_data = db.get_repo(repo_fullname)
+		print(repo_data)
 	#for star in db.get_data(repo_fullname, 'stars'):
 	#       print(star)
 	#for fork in db.get_data(repo_fullname, 'forks'):
