@@ -31,11 +31,20 @@ def get_Person(full_repo_name, created_at, json_payload, record_d, in_dict, db):
                 try:
                         user_type = in_dict['type']
                 except KeyError:
-                        user_type = helpers.get_user_type_from_url(in_dict)
+                        try:
+                                user_type = helpers.get_user_type_from_url(in_dict)
+                        except KeyError as ke:
+                                try:
+                                        user_type = helpers.get_user_type_from_url(record_d['actor'])
+                                except KeyError as ke:
+                                        print('KEYERROR: ' + str(ke))
+                                        print('record_d: ' + str(record_d))
+
 
                 if user_type != 'user':
-                        print('user_type: ' + str(user_type))
-                        raise Exception('user_type is not org!')
+                        return
+                        # print('user_type: ' + str(user_type))
+                        # raise Exception('user_type is not user!')
                         # print('in_dict: ' + str(in_dict))
                         # print('record_d: ' + str(record_d))
                         # user_type = 'org' # TODO check this

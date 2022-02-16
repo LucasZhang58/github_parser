@@ -94,79 +94,79 @@ def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_pa
 
 
 	# check for repo and actor_attributes in a record
-	if '"repo":' in str(record_d) and '"repository":' in str(record_d):
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
-		exit(1)
+	# if '"repo":' in str(record_d) and '"repository":' in str(record_d):
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)	
+	# 	print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
+	# 	exit(1)
 
-	#Call the get_Repo() function
-	try:
-		r_dict = record_d['repo']
-	except KeyError as ke:
-		try:
-			r_dict = record_d['repository']
-		except KeyError as ke:
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(ke))
-			exit(1)
+	# #Call the get_Repo() function
+	# try:
+	# 	r_dict = record_d['repo']
+	# except KeyError as ke:
+	# 	try:
+	# 		r_dict = record_d['repository']
+	# 	except KeyError as ke:
+	# 		frameinfo = getframeinfo(currentframe())
+	# 		print(frameinfo.filename, frameinfo.lineno)	
+	# 		print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(ke))
+	# 		exit(1)
 
-	except Exception as e:
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(e))
-		traceback.print_exc()
-		exit(1)
+	# except Exception as e:
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)	
+	# 	print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(e))
+	# 	traceback.print_exc()
+	# 	exit(1)
 
-	if isinstance(r_dict, dict):
-		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
-	else:
-		print('r_dict: ' + str(r_dict))
-		print('R_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
-
-
+	# if isinstance(r_dict, dict):
+	# 	repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+	# else:
+	# 	print('r_dict: ' + str(r_dict))
+	# 	print('R_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
 
 
 
 
-	#If memeber is of type user,call the get_Person function
-	try:
 
-		try:
-			if isinstance(record_d['actor_attributes'], dict):
-				p_dict = record_d['actor_attributes']
-				persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
-			else:
-				print("record_d: " + str(record_d))
-				print("HAVEN'T FOUND P_DICT")
-		except KeyError as ke:
-			if isinstance(json_payload[record_d['actor_attributes']], dict):
-				p_dict = json_payload[record_d['actor_attributes']]
-				persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
-			else:
-				print("json_payload: " + str(json_payload))
-				print("HAVEN'T FOUND P_DICT")
-			try:
-				if isinstance(record_d['actor'], dict):
-					p_dict = record_d['actor']
-					persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
-				else:
-					print("record_d: " + str(record_d))
-					print("HAVEN'T FOUND P_DICT")
-			except KeyError as ke:
-				try:
-					if isinstance(json_payload['actor'], dict):
-						p_dict = json_payload['actor']
-						persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
-					else:
-						print("json_payload: " + str(json_payload))
-						print("HAVEN'T FOUND P_DICT")
 
-				except KeyError as ke:
-					pass
-	except KeyError as ke:
-		pass
+	# #If memeber is of type user,call the get_Person function
+	# try:
 
-	except Exception as e:
-		pass
+	# 	try:
+	# 		if isinstance(record_d['actor_attributes'], dict):
+	# 			p_dict = record_d['actor_attributes']
+	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 		else:
+	# 			print("record_d: " + str(record_d))
+	# 			print("HAVEN'T FOUND P_DICT")
+	# 	except KeyError as ke:
+	# 		if isinstance(json_payload[record_d['actor_attributes']], dict):
+	# 			p_dict = json_payload[record_d['actor_attributes']]
+	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 		else:
+	# 			print("json_payload: " + str(json_payload))
+	# 			print("HAVEN'T FOUND P_DICT")
+	# 		try:
+	# 			if isinstance(record_d['actor'], dict):
+	# 				p_dict = record_d['actor']
+	# 				persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 			else:
+	# 				print("record_d: " + str(record_d))
+	# 				print("HAVEN'T FOUND P_DICT")
+	# 		except KeyError as ke:
+	# 			try:
+	# 				if isinstance(json_payload['actor'], dict):
+	# 					p_dict = json_payload['actor']
+	# 					persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 				else:
+	# 					print("json_payload: " + str(json_payload))
+	# 					print("HAVEN'T FOUND P_DICT")
+
+	# 			except KeyError as ke:
+	# 				pass
+	# except KeyError as ke:
+	# 	pass
+
+	# except Exception as e:
+	# 	pass

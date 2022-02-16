@@ -5,7 +5,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
-from getters import persons, repos
+from getters import persons, repos, orgs
 import getters.name as name
 
 ##########################
@@ -251,3 +251,10 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 	else:
 		print('p_dict: ' + str(p_dict))
 		print('P_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
+
+	# I don't think release event records have org types
+	# if 'org' in record_d:
+	# 	if isinstance(record_d['org'], dict):
+	# 		orgs.get_Org(full_repo_name, created_at, json_payload, record_d, record_d['org'], db)
+	# 	else:
+	# 		raise Exception("'org' (%s) is not a dict!\n%s" % (record_d['org'], record_d))
