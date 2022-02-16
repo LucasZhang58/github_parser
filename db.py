@@ -198,10 +198,10 @@ class Database:
         # Add Member
         ##################################################################
 
-        def add_member(self, full_repo_name, user_name_string):
+        def add_member(self, full_repo_name, m_dict):
                 try:
                         key = full_repo_name + '%'+ 'members'
-                        self.__rc.sadd(key, user_name_string)
+                        self.__rc.sadd(key, str(m_dict))
                 except Exception as e:
                         print('ERROR: ' + str(e))
                         traceback.print_exc()
