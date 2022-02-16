@@ -168,91 +168,89 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('full_repo_name is None')
 		exit(1)
-   
+
 	# save in the database
-	# try:
-	# 	db.add_data(full_repo_name, created_at, 'forks', forks_dict)
-	# except Exception as e:
-	# 	print("Failed to save %s ForkEvent record at %s: %s" % \
-	# 			(full_repo_name, created_at, str(e)))
-	# 	traceback.print_exc()
-	# 	frameinfo = getframeinfo(currentframe())
-	# 	print(frameinfo.filename, frameinfo.lineno)
+	try:
+		# validation
+		assert '/' in forks_dict['forked_repo_name'], "No '/' in forked_repo_name"
+		assert forks_dict['forked_repo_name'].split('/')[1] == full_repo_name.split('/')[1]
+		assert forks_dict['forkee_actor_name'] == forks_dict['forked_repo_name'].split('/')[0]
 
-	# # check for repo and repository in a record
-	# if 'repo' in record_d and 'repository' in record_d:
-	# 	frameinfo = getframeinfo(currentframe())
-	# 	print(frameinfo.filename, frameinfo.lineno)	
-	# 	print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
-	# 	exit(1)
+		db.add_data(full_repo_name, created_at, 'forks', forks_dict)
+	except Exception as e:
+		print("Failed to save %s ForkEvent record at %s: %s" % \
+				(full_repo_name, created_at, str(e)))
+		traceback.print_exc()
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)
+		print('forks_dict: ' + str(forks_dict))
+		print('repo_name: %s\nrecord_d: %s' % (repo_name, str(record_d)))
+		exit(1)
 
-	# try:
-	# 	r_dict = record_d['forkee']
+	# check for repo and repository in a record
+	if 'repo' in record_d and 'repository' in record_d:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
+		exit(1)
 
-	# except KeyError as ke:
-	# 	try:
-	# 		r_dict = json_payload['forkee']
-	# 	except KeyError as ke:
-	# 		try:
-	# 			r_dict = record_d['repository']
-	# 		except KeyError as ke:
-	# 			r_dict = record_d['repo']
-	# except Exception as e:
-	# 	frameinfo = getframeinfo(currentframe())
-	# 	print(frameinfo.filename, frameinfo.lineno)	
-	# 	print('FORKEVENT_EXCEPTION: ' + str(e))
-	# 	traceback.print_exc()
-	# 	exit(1)
+	try:
+		r_dict = record_d['forkee']
 
-	# if isinstance(r_dict, dict):
-	# 	repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+	except KeyError as ke:
+		try:
+			r_dict = json_payload['forkee']
+		except KeyError as ke:
+			try:
+				r_dict = record_d['repository']
+			except KeyError as ke:
+				r_dict = record_d['repo']
+	except Exception as e:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('FORKEVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
+		exit(1)
 
-	# # get the person who is forking the repo
-	# try:
-	# 	p_dict = None
-	# 	if 'forkee' in record_d:
-	# 		if isinstance(record_d['forkee'], dict):
-	# 			p_dict = record_d['forkee']['owner']
-	# 		elif isinstance(record_d['forkee'], int):
-	# 			# 'forkee' is the ID of the repo being created, no info here
-	# 			print("FORKEE INT: %s" % (record_d))
-	# 			return
-	# 		else:
-	# 			raise Exception("'forkee' of type %s" % (type(record_d['forkee'])))
+	if isinstance(r_dict, dict):
+		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
 
-	# 	elif 'actor_attributes' in record_d:
-	# 		if isinstance(record_d['actor_attributes'], dict):
-	# 			p_dict = record_d['actor_attributes']
-	# 		else:
-	# 			raise Exception("'actor_attributes' of type %s" % (type(record_d['actor_attributes'])))
+	# get the person who is forking the repo
+	try:
+		p_dict = None
+		if 'forkee' in record_d:
+			if isinstance(record_d['forkee'], dict):
+				p_dict = record_d['forkee']['owner']
+			elif isinstance(record_d['forkee'], int):
+				# 'forkee' is the ID of the repo being created, no info here
+				print("FORKEE INT: %s" % (record_d))
+				return
+			else:
+				raise Exception("'forkee' of type %s" % (type(record_d['forkee'])))
 
-	# 	elif 'actor' in record_d:
-	# 		p_dict = record_d['actor']
+		elif 'actor_attributes' in record_d:
+			if isinstance(record_d['actor_attributes'], dict):
+				p_dict = record_d['actor_attributes']
+			else:
+				raise Exception("'actor_attributes' of type %s" % (type(record_d['actor_attributes'])))
 
-	# 		if isinstance(record_d['actor'], dict):
-	# 			p_dict = record_d['actor']
-	# 		elif isinstance(record_d['actor'], str):
-	# 			p_dict = {
-	# 				'login'	: record_d['actor'],
-	# 			}
-	# 		else:
-	# 			raise Exception("'actor' of type %s" % (type(record_d['actor'])))
-	# 	else:
-	# 		raise Exception("No person info in record_d: %s" % (record_d))
+		elif 'actor' in record_d:
+			p_dict = record_d['actor']
 
-	# except Exception as e:
-	# 	frameinfo = getframeinfo(currentframe())
-	# 	print(frameinfo.filename, frameinfo.lineno)	
-	# 	print('ERROR FORKEVENT_EXCEPTION: ' + str(e))
-	# 	traceback.print_exc()
-	# 	exit(1)
+			if isinstance(record_d['actor'], dict):
+				p_dict = record_d['actor']
+			elif isinstance(record_d['actor'], str):
+				p_dict = {
+					'login'	: record_d['actor'],
+				}
+			else:
+				raise Exception("'actor' of type %s" % (type(record_d['actor'])))
 
-	# # add to the db
-	# persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# add to the db
+	persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
 
-
-	if 'org' in record_d:
-		if isinstance(record_d['org'], dict):
-			orgs.get_Org(full_repo_name, created_at, json_payload, record_d, record_d['org'], db)
-		else:
-			raise Exception("'org' (%s) is not a dict!\n%s" % (record_d['org'], record_d))
+	#if 'org' in record_d:
+	#	if isinstance(record_d['org'], dict):
+	#		orgs.get_Org(full_repo_name, created_at, json_payload, record_d, record_d['org'], db)
+	#	else:
+	#		raise Exception("'org' (%s) is not a dict!\n%s" % (record_d['org'], record_d))
