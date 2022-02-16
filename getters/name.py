@@ -9,6 +9,13 @@ import sys
 from inspect import currentframe, getframeinfo
 from getters import repos, persons
 
+def url2actor(actor_url):
+	actor = None
+	if actor_url.startswith('https://api.github.dev/users/') and \
+		len(actor_url) > len('https://api.github.dev/users/'):
+		actor = actor_url.replace('https://api.github.dev/users/')
+	return actor
+
 def get_user_name_string(json_payload, record_d, full_repo_name):
         user_name_string = None
         repo_name = None

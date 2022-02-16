@@ -209,11 +209,13 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 
 	# get the person who is forking the repo
 	try:
+		p_dict = None
 		if 'forkee' in record_d:
 			if isinstance(record_d['forkee'], dict):
 				p_dict = record_d['forkee']['owner']
 			elif isinstance(record_d['forkee'], int):
 				# 'forkee' is the ID of the repo being created, no info here
+				print("FORKEE INT: %s" % (record_d))
 				return
 			else:
 				raise Exception("'forkee' of type %s" % (type(record_d['forkee'])))

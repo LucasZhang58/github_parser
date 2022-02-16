@@ -11,32 +11,68 @@ import getters.name as name
 ##########################
 # Watch Events
 ##########################
+
+def get_actor_from_p_dict(p_dict):
+	actor = None
+	if 'login' in p_dict:
+		actor = p_dict['login']
+	elif 'url' in p_dict:
+		actor = name.url2actor(p_dict['url'])
+	return actor
+
+# gets 'p_dict', but prioritizes dict over str
+def get_actor_and_p_dict(json_payload, record_d):
+
+	p_dict = None
+	actor = None
+
+	if 'actor' in json_payload:
+		if isinstance(json_payload['actor'], str):
+			actor = json_payload['actor']
+		elif isinstance(json_payload['actor'], dict):
+			p_dict = json_payload['actor']
+			actor = get_actor_from_p_dict(p_dict)
+		else:
+			raise Exception("json_payload['actor'] is not a str or dict")
+
+	if (not actor or not p_dict or not isinstance(p_dict, dict)) and 'actor_attributes' in record_d and isinstance(record_d['actor_attributes'], dict):
+		if not actor:
+			actor = get_actor_from_p_dict(record_d['actor_attributes'])
+		else:
+			p_dict = record_d['actor_attributes']
+
+	if (not actor or not p_dict or not isinstance(p_dict, dict)) and 'actor' in record_d:
+		if not actor:
+			if isinstance(record_d['actor'], str):
+				actor = record_d['actor']
+			elif isinstance(record_d['actor'], dict):
+				actor = get_actor_from_p_dict(record_d['actor'])
+			else:
+				raise Exception("record_d['actor'] is not a str or dict")
+		
+		elif isinstance(record_d['actor'], dict):
+			p_dict = record_d['actor']
+
+	if not actor:
+		raise Exception("no actor")
+	if not p_dict:
+		if actor:
+			p_dict = {'login' : actor}
+		else:
+			raise Exception("no p_dict")
+
+	return actor, p_dict
+
 def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 	actor = None
 	starred_at = None
 	actor_gravatar = None
 
 	try:
-		try:
-			if isinstance(json_payload['actor'], str):
-				actor = json_payload['actor']
-			elif isinstance(json_payload['actor'], dict):
-				actor = json_payload['actor']['login']
-			else:
-				raise KeyError("KEYERROR: json_payload['actor'] is not a str or dict")
-		except KeyError:
-				if isinstance(record_d['actor'], str):
-					actor = record_d['actor']
-				elif isinstance(record_d['actor'], dict):
-					actor = record_d['actor']['login']
-				elif isinstance(record_d['actor_attributes'], dict):
-					actor = record_d['actor_attributes']['login']
-				else:
-					raise Exception("Exception: json_payload['actor'] is not a str or dict")
-
+		actor, p_dict = get_actor_and_p_dict(json_payload, record_d)
 		starred_at = created_at
 
-		# acttor_gravatar
+		# actor_gravatar
 		try:
 			if isinstance(record_d['actor'], dict):
 				actor_gravatar = record_d['actor']['actor_gravatar']
@@ -47,12 +83,12 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 				raise KeyError("KEYERROR: record_d['actor'] and record_d['actor'] are not dicts")
 		except KeyError:
 			actor_gravatar = None
+
 	except Exception as e:
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)
 		print('WATCHEVENT_EXCEPTION: %s\njson_payload: %s\nrecord_d: %s' % \
 			(str(e), json_payload, record_d))
-		print('record_d: ' + str(record_d))
 		traceback.print_exc()
 		exit(1)
 
@@ -75,9 +111,7 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 	try:
 		db.add_data(full_repo_name, created_at, 'stars', stars_dict)
 	except Exception as e:
-		print('full_repo_name: ' + str(full_repo_name))
-		print('created_at: ' + str(created_at))
-		print('json_payload: ' + str(json_payload))
+		print('record_d: ' + str(record_d))
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)    
 		traceback.print_exc()
@@ -92,40 +126,26 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 		exit(1)
 
 	try:
-		r_dict = record_d['repo']
-	except KeyError as ke:
-		try:
+		if 'repo' in record_d and isinstance(record_d['repo'], dict):
+			r_dict = record_d['repo']
+		elif 'repository' in record_d and isinstance(record_d['repository'], dict):
 			r_dict = record_d['repository']
-		except KeyError as ke:
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('WATCHEVENT_EXCEPTION: ' + str(ke))
-			exit(1)
+		else:
+			raise Exception("'repository' or 'repo' not found in record_d!")
+
 	except Exception as e:
+		print('record_d: ' + str(record_d))
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
-		print('WATCHEVENT_EXCEPTION: ' + str(e))
 		traceback.print_exc()
 		exit(1)
 
 	if isinstance(r_dict, dict):
 		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
-
-	try:
-		p_dict = record_d['actor']
-	except KeyError as ke:
-		try:
-			p_dict = record_d['actor_attributes']
-		except KeyError as ke:
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)	
-			print('WATCHEVENT_EXCEPTION: ' + str(ke))
-			exit(1)
-	except Exception as e:
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		traceback.print_exc()
-		exit(1)
+	else:
+		raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
 
 	if isinstance(p_dict, dict):
 		persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	else:
+		raise Exception("'p_dict' (%s) is not a dict!\n%s" % (p_dict, record_d))
