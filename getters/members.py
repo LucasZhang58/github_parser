@@ -14,15 +14,16 @@ import getters.name as name
 
 
 def get_person_or_org_from_url(full_repo_name, created_at, json_payload, record_d, m_dict, db):
-	if '/users/' in record_d['actor']['url']:
-		persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-	elif '/orgs/' in record_d['actor']['url']:
+	# if '/users/' in record_d['actor']['url']:
+	# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
+	if '/orgs/' in record_d['actor']['url']:
 		orgs.get_Org(full_repo_name, created_at, json_payload, record_d, m_dict, db)
 	else:
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)
-		print('Actor is not a dict!')
-		print('record_d: ' + str(record_d))
+		pass
+		# frameinfo = getframeinfo(currentframe())
+		# print(frameinfo.filename, frameinfo.lineno)
+		# print('Actor is not a dict!')
+		# print('record_d: ' + str(record_d))
 
 def get_m_dict(json_payload, record_d):
 	try:
@@ -53,24 +54,27 @@ def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_pa
 
 	# save in the database
 	try:
-		db.add_member(full_repo_name, m_dict)
+		pass
+	#	db.add_member(full_repo_name, m_dict)
 		try:
 			if isinstance(m_dict, dict):
 				try:
-					if m_dict['type'] == 'User' or m_dict['type'] == 'user':
-						persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-					elif m_dict['type'] == 'Org' or m_dict['type'] == 'org':
+					# if m_dict['type'] == 'User' or m_dict['type'] == 'user':
+					# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
+					if m_dict['type'] == 'Org' or m_dict['type'] == 'org':
 						orgs.get_Org(full_repo_name, created_at, json_payload, record_d, m_dict, db)
 					else:
-						print('record_d: ' + str(record_d))
+						pass
+						# print('record_d: ' + str(record_d))
 				except KeyError as ke:
 					try:
-						if '/users/' in m_dict['url']:
-							persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-						elif '/orgs/' in m_dict['url']:
-							persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
+						# if '/users/' in m_dict['url']:
+						# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
+						if '/orgs/' in m_dict['url']:
+							orgs.get_Org(full_repo_name, created_at, json_payload, record_d, m_dict, db)
 						else:
-							print('record_d: ' + str(record_d))
+							pass
+							# print('record_d: ' + str(record_d))
 					except KeyError as ke:
 						get_person_or_org_from_url(full_repo_name, created_at, json_payload, record_d, m_dict, db)
 			elif isinstance(m_dict, str):
