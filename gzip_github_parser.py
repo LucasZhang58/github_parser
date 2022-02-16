@@ -76,65 +76,41 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
 	with gzip.open(completeName,'rb') as f:
 		for idx, content in enumerate(f):
 			try:
-				record_d = json.loads(content)
-			except Exception as e:
-				print("Failed to parse record at line %d in %s" % (idx + 1, completeName))
-				traceback.print_exc()
-				continue
-
-			# repo_name
-			try:
-				repo_name = record_d['repo']['name']
-			except KeyError as ke:
 				try:
-					repo_name = record_d['repository']['name']
-				except KeyError as ke:
-					continue
+					record_d = json.loads(content)
 				except Exception as e:
-					print('ERROR: ' + str(ke))
-					frameinfo = getframeinfo(currentframe())
+					print("Failed to parse record at line %d in %s" % (idx + 1, completeName))
 					traceback.print_exc()
-					print(frameinfo.filename, frameinfo.lineno)
-					exit(1)
-			except Exception as e:
-				print('ERROR: ' + str(e))
-				print('record_d: ' + str(record_d) + ' is of type ' + str(type(record_d)))
-				frameinfo = getframeinfo(currentframe())
-				traceback.print_exc()
-				print(frameinfo.filename, frameinfo.lineno)
-				exit(1)
+					continue
 
-			# created_at
-			try:
-				created_at = record_d['created_at']
-			except KeyError as ke:
-				created_at = None
-			except Exception as e:
-				print('ERROR: ' + str(e))
-				frameinfo = getframeinfo(currentframe())
-				traceback.print_exc()
-				print(frameinfo.filename, frameinfo.lineno)
-				exit(1)
+				# repo_name
+				try:
+					repo_name = record_d['repo']['name']
+				except KeyError as ke:
+					try:
+						repo_name = record_d['repository']['name']
+					except KeyError as ke:
+						continue
 
-			# json_payload
-			try:
-				json_payload = record_d['payload']
-			except KeyError as ke:
-				json_payload = None
-			except Exception as e:
-				print('ERROR: ' + str(e))
-				frameinfo = getframeinfo(currentframe())
-				traceback.print_exc()
-				print(frameinfo.filename, frameinfo.lineno)
-				exit(1)
+				# created_at
+				try:
+					created_at = record_d['created_at']
+				except KeyError as ke:
+					created_at = None
 
-			# parse records
-			try:
+				# json_payload
+				try:
+					json_payload = record_d['payload']
+				except KeyError as ke:
+					json_payload = None
+
+				# parse records
 				if repo_name != "test":
 					parse_event(repo_name, created_at, json_payload, record_d, db,	member_past_repo_names, member_dict, commits, commit_past_repo_names, ref_past_repo_names)
+
 			except Exception as e:
 				print('parse_event EXCEPTION: ' +  (str(e)))
-				print('json_payload: ' + str(json_payload))
+				print('record_d: ' + str(record_d))
 				frameinfo = getframeinfo(currentframe())
 				traceback.print_exc()
 				print(frameinfo.filename, frameinfo.lineno)
