@@ -1,12 +1,6 @@
-import html
-from platform import release
 import traceback
-import json
-import os
-import sys
 from inspect import currentframe, getframeinfo
-from getters import persons, repos, orgs, helpers
-import getters.name as name
+from getters import actors, repos, helpers, name
 
 ##########################
 # Member Events
@@ -42,7 +36,7 @@ def get_m_dict(json_payload, record_d):
 
 def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, members_dict):
 	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
-	user_name_string = name.get_user_name_string(json_payload, record_d, full_repo_name)
+	user_name_string = name.get_actor_login_string(json_payload, record_d, full_repo_name)
 
 	if full_repo_name not in member_past_repo_names:
 		members_dict[full_repo_name] = [record_d]
@@ -139,30 +133,30 @@ def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_pa
 
 	# 	try:
 	# 		if isinstance(record_d['actor_attributes'], dict):
-	# 			p_dict = record_d['actor_attributes']
-	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 			actor_dict = record_d['actor_attributes']
+	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 	# 		else:
 	# 			print("record_d: " + str(record_d))
 	# 			print("HAVEN'T FOUND P_DICT")
 	# 	except KeyError as ke:
 	# 		if isinstance(json_payload[record_d['actor_attributes']], dict):
-	# 			p_dict = json_payload[record_d['actor_attributes']]
-	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 			actor_dict = json_payload[record_d['actor_attributes']]
+	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 	# 		else:
 	# 			print("json_payload: " + str(json_payload))
 	# 			print("HAVEN'T FOUND P_DICT")
 	# 		try:
 	# 			if isinstance(record_d['actor'], dict):
-	# 				p_dict = record_d['actor']
-	# 				persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 				actor_dict = record_d['actor']
+	# 				persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 	# 			else:
 	# 				print("record_d: " + str(record_d))
 	# 				print("HAVEN'T FOUND P_DICT")
 	# 		except KeyError as ke:
 	# 			try:
 	# 				if isinstance(json_payload['actor'], dict):
-	# 					p_dict = json_payload['actor']
-	# 					persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# 					actor_dict = json_payload['actor']
+	# 					persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 	# 				else:
 	# 					print("json_payload: " + str(json_payload))
 	# 					print("HAVEN'T FOUND P_DICT")

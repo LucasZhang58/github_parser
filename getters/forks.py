@@ -1,14 +1,6 @@
-import html
-from lib2to3.pgen2.token import SLASH
-from nturl2path import url2pathname
-from platform import release
 import traceback
-import json
-import os
-import sys
 from inspect import currentframe, getframeinfo
-from getters import repos, persons, orgs
-import getters.name as name
+from getters import repos, actors, name
 
 ##########################
 # Fork Events
@@ -253,7 +245,10 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 		exit(1)
 
 	# add to the db
-	persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	if isinstance(actor_dict, dict):
+		actors.get_Actor(full_repo_name, actor_dict, db)
+	else:
+		raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))
 
 	#if 'org' in record_d:
 	#	if isinstance(record_d['org'], dict):

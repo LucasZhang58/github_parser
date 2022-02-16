@@ -1,7 +1,3 @@
-from lib2to3.pytree import convert
-import os
-from pydoc import cram
-import time
 from inspect import currentframe, getframeinfo
 import traceback
 
@@ -12,7 +8,7 @@ class Database:
 	##################################################################
 	# Init
 	##################################################################
-	def __init__(self):
+	def __init__(self, dryrun=False):
 		try:
 			import config
 			cfg = config.Config()
@@ -23,6 +19,7 @@ class Database:
 				self.__port = cfg.get("PORT", sec="Redis", default="6379")
 				self.__db = cfg.get("DATABASE", sec="Redis", default="0")
 
+				self.__dryrun = dryrun
 				self.__rc = redis.StrictRedis(host=self.__host, port=self.__port, db=self.__db)
 			elif db_type == "rediscluster":
 				import json
@@ -96,38 +93,19 @@ class Database:
 		if isinstance(src, dict):
 			return { k.decode('utf-8'): v.decode('utf-8') for k,v in src.items() }
 		return src
+
 	##################################################################
 	# Add GitHub user data
 	##################################################################
-	def add_user(self, user_name_string, data_dict):
+	def add_actor(self, actor_login, actor_type, data_dict):
 		try:
-			key = 'user%' + user_name_string
-			# print('key: ' + str(key))
-			# print('data_dict: ' + str(data_dict))
+			assert self.__rc, "Failed to add actor %s: DB not setup" % (actor_type)
+			if self.__dryrun:
+				return
+			key = actor_type + '%' + actor_login
 			converted_data = self.convert_none_to_empty(data_dict)
 			self.__rc.hmset(key, converted_data)
 		except Exception as e:
-			print('ERROR: ' + str(e))
-			traceback.print_exc()
-			frameinfo = getframeinfo(currentframe())
-			print(frameinfo.filename, frameinfo.lineno)
-			exit(1)
-
-	##################################################################
-	# Add GitHub org data
-	##################################################################
-	def add_org(self, user_login, data_dict):
-		try:
-			key = 'org%' + user_login
-			# print('key: ' + str(key))
-			# print('data_dict: ' + str(data_dict))
-			converted_data = self.convert_none_to_empty(data_dict)
-			self.__rc.hmset(key, converted_data)
-		except Exception as e:
-			# print('user_login: ' + str(user_login) + ' is of type ' + str(type(user_login)))
-			# print('data_dict: ' + str(data_dict) + ' is of type ' + str(type(data_dict)))
-			# print('converted_data: ' + str(converted_data) + ' is of type ' + str(type(converted_data)))
-			# print('key: ' + str(key) + ' is of type ' + str(type(key)))
 			print('ERROR: ' + str(e))
 			traceback.print_exc()
 			frameinfo = getframeinfo(currentframe())
@@ -179,6 +157,9 @@ class Database:
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 
+			assert self.__rc, "Failed to add actor %s: DB not setup" % (actor_type)
+			if self.__dryrun:
+				return
 			key = 'repo%' + repo_fullname
 			converted_data = self.convert_none_to_empty(data_dict)
 			self.__rc.hmset(key, converted_data)
@@ -201,6 +182,9 @@ class Database:
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 
+			assert self.__rc, "Failed to add actor %s: DB not setup" % (actor_type)
+			if self.__dryrun:
+				return
 			converted_data = self.convert_none_to_empty(data_dict)
 			if len(converted_data) == 0:
 				converted_data = {'':''}
@@ -221,6 +205,15 @@ class Database:
 
 	def add_member(self, full_repo_name, m_dict):
 		try:
+			# NOTE: @repo_id is full repo name
+			if '/' not in repo_fullname:
+				print('repo_fullname: ' + str(repo_fullname))
+				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
+				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
+
+			assert self.__rc, "Failed to add actor %s: DB not setup" % (actor_type)
+			if self.__dryrun:
+				return
 			key = full_repo_name + '%'+ 'members'
 			self.__rc.sadd(key, str(m_dict))
 		except Exception as e:

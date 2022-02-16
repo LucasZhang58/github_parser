@@ -2,6 +2,7 @@
 QUEUING = SingleProcess
 #QUEUING = ProcessPool
 #QUEUING = Celery
+DRYRUN = False
 
 [DB]
 #Type = mongodb

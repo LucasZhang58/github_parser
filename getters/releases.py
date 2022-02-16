@@ -1,12 +1,6 @@
-import html
-from platform import release
 import traceback
-import json
-import os
-import sys
 from inspect import currentframe, getframeinfo
-from getters import persons, repos, orgs
-import getters.name as name
+from getters import repos, actors, name
 
 ##########################
 # Release Events
@@ -14,6 +8,9 @@ import getters.name as name
 
 def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 	try:
+		if not isinstance(json_payload, dict):
+			raise Exception("'json_payload' not a dict!")
+
 		try:
 			tag_name = json_payload['release']['tag_name']
 		except KeyError as ke:
@@ -221,20 +218,23 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 
 	if isinstance(r_dict, dict):
 		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+	else:
+		raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
 
+	# actor making the releasing
 	try:
 		if isinstance(record_d['actor'], dict):
-			p_dict = record_d['actor']
-			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+			actor_dict = record_d['actor']
+			persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 		elif isinstance(record_d['actor_attributes'], dict):
-				p_dict = record_d['actor_attributes']
-				persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+				actor_dict = record_d['actor_attributes']
+				persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 		else:
 			print("record_d: " + str(record_d))
 			print("HAVEN'T FOUND P_DICT")
 	except KeyError as ke:
-		p_dict = None
-		print('p_dict: ' + str(p_dict))
+		actor_dict = None
+		print('actor_dict: ' + str(actor_dict))
 		frameinfo = getframeinfo(currentframe())
 		print(frameinfo.filename, frameinfo.lineno)	
 		print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
@@ -246,15 +246,8 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 		traceback.print_exc()
 		exit(1)
 
-	if isinstance(p_dict, dict):
-		persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+	# actor owning the repo
+	if isinstance(actor_dict, dict):
+		persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
 	else:
-		print('p_dict: ' + str(p_dict))
-		print('P_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
-
-	# I don't think release event records have org types
-	# if 'org' in record_d:
-	# 	if isinstance(record_d['org'], dict):
-	# 		orgs.get_Org(full_repo_name, created_at, json_payload, record_d, record_d['org'], db)
-	# 	else:
-	# 		raise Exception("'org' (%s) is not a dict!\n%s" % (record_d['org'], record_d))
+		raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))
