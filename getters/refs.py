@@ -4,7 +4,7 @@ import json
 import os
 import sys
 from inspect import currentframe, getframeinfo
-from getters import repos, persons
+from getters import repos, actors
 import getters.name as name
 
 ##########################
@@ -121,17 +121,17 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, type_name, rec
 		# save person information
 		try:
 			if isinstance(record_d['actor'], dict):
-				p_dict = record_d['actor']
-				persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+				actor_dict = record_d['actor']
+				actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 			elif isinstance(record_d['actor_attributes'], dict):
-					p_dict = record_d['actor_attributes']
-					persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+					actor_dict = record_d['actor_attributes']
+					actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 			else:
-				raise Exception("HAVEN'T FOUND P_DICT")
+				raise Exception("HAVEN'T FOUND actor_dict")
 
 		except KeyError as ke:
 			if 'actor' in record_d:
-				p_dict = {
+				actor_dict = {
 					'login' : record_d['actor']
 				}
 			else:
@@ -139,10 +139,10 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, type_name, rec
 
 		full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
 
-		if isinstance(p_dict, dict):
-			persons.get_Person(full_repo_name, created_at, json_payload, record_d, p_dict, db)
+		if isinstance(actor_dict, dict):
+			actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 		else:
-			raise Exception('P_DICT (%s) IS NOT A DICT!' % (str(p_dict)))
+			raise Exception('actor_dict (%s) IS NOT A DICT!' % (str(actor_dict)))
 
 	except Exception as e:
 		print('record_d (%s): %s' % (type(record_d), str(record_d)))

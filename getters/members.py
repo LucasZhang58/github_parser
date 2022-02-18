@@ -6,19 +6,6 @@ from getters import actors, repos, helpers, name
 # Member Events
 ##########################
 
-
-def get_person_or_org_from_url(full_repo_name, created_at, json_payload, record_d, m_dict, db):
-	# if '/users/' in record_d['actor']['url']:
-	# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-	if '/orgs/' in record_d['actor']['url']:
-		orgs.get_Org(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-	else:
-		pass
-		# frameinfo = getframeinfo(currentframe())
-		# print(frameinfo.filename, frameinfo.lineno)
-		# print('Actor is not a dict!')
-		# print('record_d: ' + str(record_d))
-
 def get_m_dict(json_payload, record_d):
 	try:
 		m_dict = record_d['member']
@@ -46,125 +33,98 @@ def get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_pa
 
 	m_dict = get_m_dict(json_payload, record_d)
 
+	# get actor_type
+	try:
+		if isinstance(record_d['actor'], dict):
+			actor_type = helpers.get_actor_type_from_url(record_d['actor']['url'])
+		elif isinstance(record_d['url'], str):
+			actor_type = helpers.get_actor_type_from_url(record_d['url'])
+		else: 
+			print('record_d is not a dict and record_d is ' + str(record_d))
+	except KeyError as ke:
+		print('KEYERROR: ' + ' actor not in record_d ' + str(ke))
+	except Exception as e:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('KEYERROR: ' + print(str(ke)))
+		print('record_d: ' + str(record_d))
+
+	actor_type = helpers.get_actor_type_from_url(record_d['actor'])
+
 	# save in the database
 	try:
-		pass
-	#	db.add_member(full_repo_name, m_dict)
 		try:
-			if isinstance(m_dict, dict):
-				try:
-					# if m_dict['type'] == 'User' or m_dict['type'] == 'user':
-					# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-					if m_dict['type'] == 'Org' or m_dict['type'] == 'org':
-						orgs.get_Org(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-					else:
-						pass
-						# print('record_d: ' + str(record_d))
-				except KeyError as ke:
-					try:
-						# if '/users/' in m_dict['url']:
-						# 	persons.get_Person(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-						if '/orgs/' in m_dict['url']:
-							orgs.get_Org(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-						else:
-							pass
-							# print('record_d: ' + str(record_d))
-					except KeyError as ke:
-						get_person_or_org_from_url(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-			elif isinstance(m_dict, str):
-				m_dict = {'login' : m_dict}
-				get_person_or_org_from_url(full_repo_name, created_at, json_payload, record_d, m_dict, db)
-			else:
-				print('m_dict is not a dict or a str!')
+			# pass
+			db.add_member(full_repo_name, m_dict, actor_type)
 		except KeyError as ke:
 			frameinfo = getframeinfo(currentframe())
 			print(frameinfo.filename, frameinfo.lineno)	
-			print('KEYERROR: ' + print(str(ke)))
+			print('KEYERROR: ' + str(ke))
 			print('record_d: ' + str(record_d))
-	except Exception as e:
-		db.add_member(full_repo_name, m_dict)
-		print('record_d: ' + str(record_d))
-		print("Failed to save %s MemberEvent record at %s: %s" % \
-				(full_repo_name, created_at, str(e)))
-		traceback.print_exc()
+		try:
+			if isinstance(m_dict, dict):
+				actors.get_Actor(full_repo_name, m_dict, record_d, db, created_at)			
+			elif isinstance(m_dict, str):
+				m_dict = {'login' : m_dict}
+				actors.get_Actor(full_repo_name, m_dict, record_d, db, created_at)
+			else:
+				print('m_dict is not a dict or a str!')
+		
+		except KeyError as ke:
+			frameinfo = getframeinfo(currentframe())
+			print(frameinfo.filename, frameinfo.lineno)	
+			print('KEYERROR: ' + str(ke))
+			print('record_d: ' + str(record_d))
+		try:
+			actor, actor_dict = helpers.get_actor_and_actor_dict(json_payload, record_d)
+			actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 
+		except KeyError as ke:
+			frameinfo = getframeinfo(currentframe())
+			print(frameinfo.filename, frameinfo.lineno)	
+			print('KEYERROR: ' + str(ke))
+			print('record_d: ' + str(record_d))
+			# pass
+
+	except Exception as e:
+		db.add_member(full_repo_name, m_dict, actor_type)
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('EXCEPTION MEMBEREVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
+		exit(1)
 
 
 
 	# check for repo and actor_attributes in a record
-	# if '"repo":' in str(record_d) and '"repository":' in str(record_d):
-	# 	frameinfo = getframeinfo(currentframe())
-	# 	print(frameinfo.filename, frameinfo.lineno)	
-	# 	print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
-	# 	exit(1)
+	if '"repo":' in str(record_d) and '"repository":' in str(record_d):
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
+		exit(1)
 
-	# #Call the get_Repo() function
-	# try:
-	# 	r_dict = record_d['repo']
-	# except KeyError as ke:
-	# 	try:
-	# 		r_dict = record_d['repository']
-	# 	except KeyError as ke:
-	# 		frameinfo = getframeinfo(currentframe())
-	# 		print(frameinfo.filename, frameinfo.lineno)	
-	# 		print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(ke))
-	# 		exit(1)
+	#Call the get_Repo() function
+	try:
+		r_dict = record_d['repo']
+	except KeyError as ke:
+		try:
+			r_dict = record_d['repository']
+		except KeyError as ke:
+			frameinfo = getframeinfo(currentframe())
+			print(frameinfo.filename, frameinfo.lineno)	
+			print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(ke))
+			exit(1)
 
-	# except Exception as e:
-	# 	frameinfo = getframeinfo(currentframe())
-	# 	print(frameinfo.filename, frameinfo.lineno)	
-	# 	print('KEYERROR MEMBEREVENT_EXCEPTION: ' + str(e))
-	# 	traceback.print_exc()
-	# 	exit(1)
+	except Exception as e:
+		frameinfo = getframeinfo(currentframe())
+		print(frameinfo.filename, frameinfo.lineno)	
+		print('EXCEPTION MEMBEREVENT_EXCEPTION: ' + str(e))
+		traceback.print_exc()
+		exit(1)
 
-	# if isinstance(r_dict, dict):
-	# 	repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
-	# else:
-	# 	print('r_dict: ' + str(r_dict))
-	# 	print('R_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
+	if isinstance(r_dict, dict):
+		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+	else:
+		print('r_dict: ' + str(r_dict))
+		print('R_DICT IS NOT A DICT!!!!!!!!!!!!!!!!')
 
-
-
-
-
-
-	# #If memeber is of type user,call the get_Person function
-	# try:
-
-	# 	try:
-	# 		if isinstance(record_d['actor_attributes'], dict):
-	# 			actor_dict = record_d['actor_attributes']
-	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
-	# 		else:
-	# 			print("record_d: " + str(record_d))
-	# 			print("HAVEN'T FOUND P_DICT")
-	# 	except KeyError as ke:
-	# 		if isinstance(json_payload[record_d['actor_attributes']], dict):
-	# 			actor_dict = json_payload[record_d['actor_attributes']]
-	# 			persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
-	# 		else:
-	# 			print("json_payload: " + str(json_payload))
-	# 			print("HAVEN'T FOUND P_DICT")
-	# 		try:
-	# 			if isinstance(record_d['actor'], dict):
-	# 				actor_dict = record_d['actor']
-	# 				persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
-	# 			else:
-	# 				print("record_d: " + str(record_d))
-	# 				print("HAVEN'T FOUND P_DICT")
-	# 		except KeyError as ke:
-	# 			try:
-	# 				if isinstance(json_payload['actor'], dict):
-	# 					actor_dict = json_payload['actor']
-	# 					persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
-	# 				else:
-	# 					print("json_payload: " + str(json_payload))
-	# 					print("HAVEN'T FOUND P_DICT")
-
-	# 			except KeyError as ke:
-	# 				pass
-	# except KeyError as ke:
-	# 	pass
-
-	# except Exception as e:
-	# 	pass

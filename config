@@ -1,8 +1,9 @@
 [Infrastructure]
-QUEUING = SingleProcess
-#QUEUING = ProcessPool
+# QUEUING = SingleProcess
+QUEUING = ProcessPool
 #QUEUING = Celery
-DRYRUN = False
+DRYRUN = False 
+# if true, then it won't store in redis
 
 [DB]
 #Type = mongodb

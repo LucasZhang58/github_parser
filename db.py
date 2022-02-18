@@ -157,7 +157,7 @@ class Database:
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 
-			assert self.__rc, "Failed to add actor %s: DB not setup" % (actor_type)
+			assert self.__rc, "Failed to add repo %s: DB not setup" % (repo_fullname)
 			if self.__dryrun:
 				return
 			key = 'repo%' + repo_fullname
@@ -182,7 +182,7 @@ class Database:
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 
-			assert self.__rc, "Failed to add actor %s: DB not setup" % (actor_type)
+			assert self.__rc, "Failed to add data %s: DB not setup" % (repo_fullname)
 			if self.__dryrun:
 				return
 			converted_data = self.convert_none_to_empty(data_dict)
@@ -203,11 +203,11 @@ class Database:
 	# Add Member
 	##################################################################
 
-	def add_member(self, full_repo_name, m_dict):
+	def add_member(self, full_repo_name, m_dict, actor_type):
 		try:
 			# NOTE: @repo_id is full repo name
-			if '/' not in repo_fullname:
-				print('repo_fullname: ' + str(repo_fullname))
+			if '/' not in full_repo_name:
+				print('repo_fullname: ' + str(full_repo_name))
 				# example: 'foo/bar' where @foo is the GitHub user and @bar is the repo name
 				raise Exception('db.add_repo accepts full repo name (e.g., foo/bar)')
 

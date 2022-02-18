@@ -7,7 +7,7 @@ from getters import helpers
 # Actor (User or Organization)
 ##########################
 
-def get_Actor(full_repo_name, actor_dict, record_d, db):
+def get_Actor(full_repo_name, actor_dict, record_d, db, created_at):
 	try:
 
 		# String ID

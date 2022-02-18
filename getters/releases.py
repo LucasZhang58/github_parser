@@ -225,10 +225,10 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 	try:
 		if isinstance(record_d['actor'], dict):
 			actor_dict = record_d['actor']
-			persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
+			actors.get_Actor(full_repo_name, actor_dict, record_d, db)
 		elif isinstance(record_d['actor_attributes'], dict):
 				actor_dict = record_d['actor_attributes']
-				persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
+				actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 		else:
 			print("record_d: " + str(record_d))
 			print("HAVEN'T FOUND P_DICT")
@@ -248,6 +248,6 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 
 	# actor owning the repo
 	if isinstance(actor_dict, dict):
-		persons.get_Person(full_repo_name, created_at, json_payload, record_d, actor_dict, db)
+		actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 	else:
 		raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))

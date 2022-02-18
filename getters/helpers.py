@@ -16,7 +16,6 @@ def get_actor_type_from_url(actor_url):
 	elif '/orgs/' in actor_url:
 		return 'Organization'
 	return None
-	#raise Exception("Failed to find user type in URL: %s" % (actor_url))
 
 def get_actor_from_actor_dict(actor_dict):
 	actor = None
@@ -48,6 +47,19 @@ def get_actor_and_actor_dict(json_payload, record_d):
 			actor = new_actor 
 		if not actor_dict or not isinstance(actor_dict, dict) and new_actor_dict and len(new_actor_dict) > len(actor_dict):
 			actor_dict = new_actor_dict
+		else:
+			raise Exception("EXCEPTION: if 'actor_attributes' in record_d and isinstance(record_d['actor_attributes'], dict):")
+
+
+	if 'actor_attributes' in json_payload and isinstance(json_payload['actor_attributes'], dict):
+		new_actor = get_actor_from_actor_dict(json_payload['actor_attributes'])
+		new_actor_dict = json_payload['actor_attributes']
+		if not actor and new_actor:
+			actor = new_actor 
+		if not actor_dict or not isinstance(actor_dict, dict) and new_actor_dict and len(new_actor_dict) > len(actor_dict):
+			actor_dict = new_actor_dict
+		else:
+			raise Exception("EXCEPTION: if 'actor_attributes' in json_payload and isinstance(json_payload['actor_attributes'], dict'")
 
 	if 'actor' in record_d:
 		new_actor = None

@@ -209,10 +209,10 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 
 	# get the person who is forking the repo
 	try:
-		p_dict = None
+		actor_dict = None
 		if 'forkee' in record_d:
 			if isinstance(record_d['forkee'], dict):
-				p_dict = record_d['forkee']['owner']
+				actor_dict = record_d['forkee']['owner']
 			elif isinstance(record_d['forkee'], int):
 				# 'forkee' is the ID of the repo being created, no info here
 				print("FORKEE INT: %s" % (record_d))
@@ -222,17 +222,17 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 
 		elif 'actor_attributes' in record_d:
 			if isinstance(record_d['actor_attributes'], dict):
-				p_dict = record_d['actor_attributes']
+				actor_dict = record_d['actor_attributes']
 			else:
 				raise Exception("'actor_attributes' of type %s" % (type(record_d['actor_attributes'])))
 
 		elif 'actor' in record_d:
-			p_dict = record_d['actor']
+			actor_dict = record_d['actor']
 
 			if isinstance(record_d['actor'], dict):
-				p_dict = record_d['actor']
+				actor_dict = record_d['actor']
 			elif isinstance(record_d['actor'], str):
-				p_dict = {
+				actor_dict = {
 					'login'	: record_d['actor'],
 				}
 			else:
@@ -246,12 +246,7 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 
 	# add to the db
 	if isinstance(actor_dict, dict):
-		actors.get_Actor(full_repo_name, actor_dict, db)
+		actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 	else:
 		raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))
 
-	#if 'org' in record_d:
-	#	if isinstance(record_d['org'], dict):
-	#		orgs.get_Org(full_repo_name, created_at, json_payload, record_d, record_d['org'], db)
-	#	else:
-	#		raise Exception("'org' (%s) is not a dict!\n%s" % (record_d['org'], record_d))

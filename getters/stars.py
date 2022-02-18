@@ -1,5 +1,6 @@
 import traceback
 from getters import repos, actors, name, helpers
+from inspect import currentframe, getframeinfo
 
 ##########################
 # Watch Events
@@ -87,13 +88,13 @@ def get_WatchEvent(repo_name, created_at, json_payload, record_d, db):
 		exit(1)
 
 	if isinstance(r_dict, dict):
-		if 'owner' not in r_dict or not r_dict['owner']:
-			raise Exception('No owner')
+		# if 'owner' not in r_dict or not r_dict['owner']:
+		# 	raise Exception('No owner')
 		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
 	else:
 		raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
 
 	if isinstance(actor_dict, dict):
-		actors.get_Actor(full_repo_name, actor_dict, record_d, db)
+		actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
 	else:
 		raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))
