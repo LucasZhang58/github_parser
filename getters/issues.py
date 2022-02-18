@@ -20,74 +20,45 @@ def get_issue_time_at_helper_a(record_d, type_at, in_dict):
                         print(frameinfo.filename, frameinfo.lineno)
                         print('record: ' + str(record_d))
 
+
+def get_issue_time_at_helper_b(record_d, type_at):
+
+        if record_d['action'] == type_at:
+                if type_at == 'opened':
+                        return record_d['created_at']
+                elif type_at == 'closed':
+                        return record_d['closed_at']
+                else:
+                        print("record_d doesn't have 'action'")
+                        frameinfo = getframeinfo(currentframe())
+                        print(frameinfo.filename, frameinfo.lineno)
+                        print('recrod: ' + str(record_d))
+
 def get_issue_time_at(created_at, json_payload, record_d, type_at):
-        try:  
-                try:
-                        get_issue_time_at_helper_a(record_d, type_at, record_d['issue'])
-                except KeyError as ke:
+        if 'action' in record_d:
+                try:  
                         try:
-                                get_issue_time_at_helper_a(record_d, type_at, record_d['milestone'])
+                                get_issue_time_at_helper_a(record_d, type_at, record_d['issue'])
                         except KeyError as ke:
                                 try:
-                                        if record_d['action'] == type_at:
-                                                if type_at == 'opened':
-                                                        return record_d['created_at']
-                                                elif type_at == 'closed':
-                                                        return record_d['closed_at']
-                                                else:
-                                                        print("record_d doesn't have 'action'")
-                                                        frameinfo = getframeinfo(currentframe())
-                                                        print(frameinfo.filename, frameinfo.lineno)
-                                                        print('recrod: ' + str(record_d))
+                                        get_issue_time_at_helper_a(record_d, type_at, record_d['milestone'])
                                 except KeyError as ke:
                                         try:
-                                                if json_payload['action'] == type_at and isinstance(json_payload['issue'], dict):
-                                                        if type_at == 'opened':
-                                                                return json_payload['issue']['created_at']
-                                                        elif type_at == 'closed':
-                                                                return json_payload['issue']['closed_at']
-                                                        else:
-                                                                print("json_payload doesn't have 'action'")
-                                                                frameinfo = getframeinfo(currentframe())
-                                                                print(frameinfo.filename, frameinfo.lineno)
-                                                                print('json_payload: ' + str(json_payload))
+                                                get_issue_time_at_helper_b(record_d, type_at)
                                         except KeyError as ke:
-                                                try:
-                                                        if json_payload['action'] == type_at and isinstance(json_payload['milestone'], dict):
-                                                                if type_at == 'opened':
-                                                                        return json_payload['milestone']['created_at']
-                                                                elif type_at == 'closed':
-                                                                        return json_payload['milestone']['closed_at']
-                                                                else:
-                                                                        print("json_payload doesn't have 'action'")
-                                                                        frameinfo = getframeinfo(currentframe())
-                                                                        print(frameinfo.filename, frameinfo.lineno)
-                                                                        print('json_payload: ' + str(json_payload))
-                                                except KeyError as ke:
-                                                        try:
-                                                                if json_payload['action'] == type_at:
-                                                                        if type_at == 'opened':
-                                                                                return json_payload['created_at']
-                                                                        elif type_at == 'closed':
-                                                                                return json_payload['closed_at']
-                                                                        else:
-                                                                                print("json_payload doesn't have 'action'")
-                                                                                frameinfo = getframeinfo(currentframe())
-                                                                                print(frameinfo.filename, frameinfo.lineno)
-                                                                                print('json_payload: ' + str(json_payload))
-
-                                                        except KeyError as ke:
-                                                                print("'action' not found in record_d nor json_payload")
-                                                                print('record: ' + str(record_d))
-                                                                frameinfo = getframeinfo(currentframe())
-                                                                print(frameinfo.filename, frameinfo.lineno)
-                                                                return created_at
-        except Exception as e:
-                frameinfo = getframeinfo(currentframe())
-                print(frameinfo.filename, frameinfo.lineno)	
-                print('ERROR ISSUEEVENT_EXCEPTION get_issue_time_at(created_at, json_payload, record_d, type_at): : ' + str(e))
-                traceback.print_exc()
-                exit(1)
+                                                print("'action' not found in record_d nor json_payload")
+                                                print('record: ' + str(record_d))
+                                                frameinfo = getframeinfo(currentframe())
+                                                print(frameinfo.filename, frameinfo.lineno)
+                                                return created_at
+                except Exception as e:
+                        frameinfo = getframeinfo(currentframe())
+                        print(frameinfo.filename, frameinfo.lineno)	
+                        print('ERROR ISSUEEVENT_EXCEPTION get_issue_time_at(created_at, json_payload, record_d, type_at): : ' + str(e))
+                        traceback.print_exc()
+                        exit(1)
+        else:
+                print('record_d: ' + str(record_d))
 
 
 def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
@@ -135,8 +106,6 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                 issue_id = None
                                 
                         if 'action' in record_d:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)
                                 if record_d['action'] == 'opened':
                                         issue_created_at = get_issue_time_at(created_at, json_payload, record_d, 'opened')   
 
@@ -149,8 +118,6 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                         frameinfo = getframeinfo(currentframe())
                                         print(frameinfo.filename, frameinfo.lineno)
                         elif 'action' in json_payload:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)
                                 if json_payload['action'] == 'opened':
                                         issue_created_at = get_issue_time_at(created_at, json_payload, record_d, 'opened')
 
