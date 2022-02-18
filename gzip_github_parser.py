@@ -36,8 +36,8 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         	# TODO enable this
         	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # elif 'PushEvent' == record_d['type']:
-        # 	pass
+        # if 'PushEvent' == record_d['type']:
+        # 	#pass
         # 	# TODO enable this
         # 	commits.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
