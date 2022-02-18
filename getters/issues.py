@@ -38,13 +38,13 @@ def get_issue_time_at(created_at, json_payload, record_d, type_at):
         if 'action' in record_d:
                 try:  
                         try:
-                                get_issue_time_at_helper_a(record_d, type_at, record_d['issue'])
+                                return get_issue_time_at_helper_a(record_d, type_at, record_d['issue'])
                         except KeyError as ke:
                                 try:
-                                        get_issue_time_at_helper_a(record_d, type_at, record_d['milestone'])
+                                        return get_issue_time_at_helper_a(record_d, type_at, record_d['milestone'])
                                 except KeyError as ke:
                                         try:
-                                                get_issue_time_at_helper_b(record_d, type_at)
+                                                return get_issue_time_at_helper_b(record_d, type_at)
                                         except KeyError as ke:
                                                 print("'action' not found in record_d nor json_payload")
                                                 print('record: ' + str(record_d))
@@ -76,6 +76,8 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                         issue_id = record_d['issue']['issue_id']
                                 else:
                                         print('record_d: ' + str(record_d))
+                                        frameinfo = getframeinfo(currentframe())
+                                        print(frameinfo.filename, frameinfo.lineno)
                                         issue_id = None
                                         raise Exception('issue is not an int or a dict')
                         elif 'issue' in json_payload:
@@ -182,6 +184,8 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                         else:
                                 print('is actor a dict?')
                                 print('record_d: ' + str(record_d))
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
 
                 elif 'user' in record_d['issue']:
                         if isinstance(record_d['issue'], dict):
@@ -190,9 +194,13 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                 else:
                                         print('record_d: ' + str(record_d))
                                         print("record_d['issue']['user'] is not a dict")
+                                        frameinfo = getframeinfo(currentframe())
+                                        print(frameinfo.filename, frameinfo.lineno)
                         else:
                                 print('record_d: ' + str(record_d))
                                 print("record_d['issue'] is not a dict")
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
 
 
                 else:   
@@ -211,9 +219,13 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                         else:
                                 print('record_d: ' + str(record_d))
                                 print("record_d['issue']['assignee'] is not a dict")
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
                 else:
                         print('record_d: ' + str(record_d))
                         print("record_d['issue'] is not a dict")
+                        frameinfo = getframeinfo(currentframe())
+                        print(frameinfo.filename, frameinfo.lineno)
                         assignee = None
 
         except KeyError as ke:
@@ -228,6 +240,8 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                         else:
                                 # print('record_d: ' + str(record_d))
                                 # print("it looks like title isn't in record_d")
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
                                 title = None
                 except KeyError as ke:
                         title = None
