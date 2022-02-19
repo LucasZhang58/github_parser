@@ -13,6 +13,7 @@ import forks
 import issues
 import members
 import refs
+import commits_file
   
 ######################
 # Parse Events
@@ -31,15 +32,15 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         # if 'CreateEvent' == record_d['type']:
         #         refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
-        if 'IssuesEvent' == record_d['type']:
-        	#pass
-        	# TODO enable this
-        	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
-
-        # if 'PushEvent' == record_d['type']:
+        # if 'IssuesEvent' == record_d['type']:
         # 	#pass
         # 	# TODO enable this
-        # 	commits.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
+        # 	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
+
+        if 'PushEvent' == record_d['type']:
+        	#pass
+        	# TODO enable this
+        	commits_file.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
         # if 'MemberEvent' == record_d['type']:
         # 	members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
