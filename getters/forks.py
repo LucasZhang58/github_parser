@@ -163,10 +163,10 @@ def get_ForkEvent(repo_name, created_at, json_payload, record_d, db):
 
 	# save in the database
 	try:
-		# validation
-		assert '/' in forks_dict['forked_repo_name'], "No '/' in forked_repo_name"
-		assert forks_dict['forked_repo_name'].split('/')[1] == full_repo_name.split('/')[1]
-		assert forks_dict['forkee_actor_name'] == forks_dict['forked_repo_name'].split('/')[0]
+	# 	# validation
+	# 	assert '/' in forks_dict['forked_repo_name'], "No '/' in forked_repo_name"
+	# 	assert forks_dict['forked_repo_name'].split('/')[1] == full_repo_name.split('/')[1]
+	# 	assert forks_dict['forkee_actor_name'] == forks_dict['forked_repo_name'].split('/')[0]
 
 		db.add_data(full_repo_name, created_at, 'forks', forks_dict)
 	except Exception as e:

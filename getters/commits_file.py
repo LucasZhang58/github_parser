@@ -477,53 +477,55 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
                 'commits' : commits
         }
 
-        if repo_name not in commit_past_repo_names:
-                commits_dict['{}'.format(repo_name)] = [commit]
-        else:
-                commits_dict['{}'.format(repo_name)].append(commit)
-
         full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
+
+        if repo_name not in commit_past_repo_names:
+                commits_dict[full_repo_name] = [commit]
+        else:
+                commits_dict[full_repo_name].append(commit)
+
+        
   
-        # # save in the database
-        # try:
-        #         db.add_data(full_repo_name, created_at, 'commits', commits_dict)
-        # except Exception as e:
-        #         print("Failed to save %s PushEvent record at %s: %s" % \
-        #                         (full_repo_name, created_at, str(e)))
-        #         traceback.print_exc()
-        #         frameinfo = getframeinfo(currentframe())
-        #         print(frameinfo.filename, frameinfo.lineno)
+        # save in the database
+        try:
+                db.add_data(full_repo_name, created_at, 'commits', commits_dict)
+        except Exception as e:
+                print("Failed to save %s PushEvent record at %s: %s" % \
+                                (full_repo_name, created_at, str(e)))
+                traceback.print_exc()
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)
 
 
-        # # check for repo and actor_attributes in a record
-        # if '"repo":' in str(record_d) and '"repository":' in str(record_d):
-        #         frameinfo = getframeinfo(currentframe())
-        #         print(frameinfo.filename, frameinfo.lineno)	
-        #         print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
-        #         exit(1)
+        # check for repo and actor_attributes in a record
+        if '"repo":' in str(record_d) and '"repository":' in str(record_d):
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print('REPO_and_REPOSITORY_in_the_same_record_EXCEPTION: ' + str(e))
+                exit(1)
 
-        # try:
-        #         r_dict = record_d['repo']
-        # except KeyError as ke:
-        #         try:
-        #                 r_dict = record_d['repository']
-        #         except KeyError as ke:
-        #                 frameinfo = getframeinfo(currentframe())
-        #                 print(frameinfo.filename, frameinfo.lineno)	
-        #                 print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
-        #                 exit(1)
+        try:
+                r_dict = record_d['repo']
+        except KeyError as ke:
+                try:
+                        r_dict = record_d['repository']
+                except KeyError as ke:
+                        frameinfo = getframeinfo(currentframe())
+                        print(frameinfo.filename, frameinfo.lineno)	
+                        print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
+                        exit(1)
 
-        # except Exception as e:
-        #         frameinfo = getframeinfo(currentframe())
-        #         print(frameinfo.filename, frameinfo.lineno)	
-        #         print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
-        #         traceback.print_exc()
-        #         exit(1)
+        except Exception as e:
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
+                traceback.print_exc()
+                exit(1)
 
-        # if isinstance(r_dict, dict):
-        #         repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
-        # else:
-        #         raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
+        if isinstance(r_dict, dict):
+                repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+        else:
+                raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
 
 
 

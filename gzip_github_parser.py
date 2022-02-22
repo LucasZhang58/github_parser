@@ -23,13 +23,13 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         # if 'WatchEvent' == record_d['type']:
         #         stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # if 'ReleaseEvent' == record_d['type']:
-        #         releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
+        if 'ReleaseEvent' == record_d['type']:
+                releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # if 'ForkEvent' == record_d['type']:
+        # elif 'ForkEvent' == record_d['type']:
         #        forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # if 'CreateEvent' == record_d['type']:
+        # elif 'CreateEvent' == record_d['type']:
         #         refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
         # if 'IssuesEvent' == record_d['type']:
@@ -37,10 +37,10 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         # 	# TODO enable this
         # 	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
-        if 'PushEvent' == record_d['type']:
-        	#pass
-        	# TODO enable this
-        	commits_file.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
+        # if 'PushEvent' == record_d['type']:
+        # 	#pass
+        # 	# TODO enable this
+        # 	commits_file.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
         # if 'MemberEvent' == record_d['type']:
         # 	members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
