@@ -297,7 +297,6 @@ class Database:
 		except Exception as e:
 			raise Exception('Failed to get repo %s: %s' % (data_type_fullname, str(e)))
 
-
 ##################################################################
 # Main
 ##################################################################

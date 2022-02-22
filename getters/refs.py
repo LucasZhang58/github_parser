@@ -88,61 +88,61 @@ def ref_helper(repo_name, created_at, record_d, json_payload, db, type_name, rec
 		else:
 			raise Exception("Unknown ref_type %s" % (ref_type))
 
-		#try:
-		#	if  full_repo_name not in  ref_past_repo_names:
-		#		ref_past_repo_names[full_repo_name] = {ref_type_plural : [type_dict]}
-		#		#print(ref_past_repo_names['{}'.format(full_repo_name)])
-		#	else:
-		#		if ref_type_plural not in ref_past_repo_names[full_repo_name]:
-		#			ref_past_repo_names[full_repo_name][ref_type_plural] = [type_dict]
-		#		else:
-		#			ref_past_repo_names[full_repo_name][ref_type_plural].append(type_dict)
-		#except KeyError as ke:
-		#	print('KEYERROR re_helper, if full_repo_name not in ref_past_repo_names["{}".format(full_repo_name)] and not ref_past_repo_names["{}".format(full_repo_name)]: ' + str(ke))
-		#	traceback.print_exc()
+		try:
+			if  full_repo_name not in  ref_past_repo_names:
+				ref_past_repo_names[full_repo_name] = {ref_type_plural : [type_dict]}
+				#print(ref_past_repo_names['{}'.format(full_repo_name)])
+			else:
+				if ref_type_plural not in ref_past_repo_names[full_repo_name]:
+					ref_past_repo_names[full_repo_name][ref_type_plural] = [type_dict]
+				else:
+					ref_past_repo_names[full_repo_name][ref_type_plural].append(type_dict)
+		except KeyError as ke:
+			print('KEYERROR re_helper, if full_repo_name not in ref_past_repo_names["{}".format(full_repo_name)] and not ref_past_repo_names["{}".format(full_repo_name)]: ' + str(ke))
+			traceback.print_exc()
 
-		# save in the database
+	#	save in the database
 		db.add_data(full_repo_name, created_at, ref_type_plural, type_dict)
 
-	# 	# save repo informtion
-	# 	try:
-	# 		r_dict = record_d['repo']
-	# 	except KeyError as ke:
-	# 		try:
-	# 			r_dict = record_d['repository']
-	# 		except KeyError as ke:
-	# 			raise Exception("'repo' or 'repository' not found")
+		# save repo informtion
+		try:
+			r_dict = record_d['repo']
+		except KeyError as ke:
+			try:
+				r_dict = record_d['repository']
+			except KeyError as ke:
+				raise Exception("'repo' or 'repository' not found")
 
-	# 	if isinstance(r_dict, dict):
-	# 		repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
-	# 	else:
-	# 		raise Exception("'r_dict' not a dict!")
+		if isinstance(r_dict, dict):
+			repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
+		else:
+			raise Exception("'r_dict' not a dict!")
 
-	# 	# save person information
-	# 	try:
-	# 		if isinstance(record_d['actor'], dict):
-	# 			actor_dict = record_d['actor']
-	# 			actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
-	# 		elif isinstance(record_d['actor_attributes'], dict):
-	# 				actor_dict = record_d['actor_attributes']
-	# 				actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
-	# 		else:
-	# 			raise Exception("HAVEN'T FOUND actor_dict")
+		# save person information
+		try:
+			if isinstance(record_d['actor'], dict):
+				actor_dict = record_d['actor']
+				actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
+			elif isinstance(record_d['actor_attributes'], dict):
+					actor_dict = record_d['actor_attributes']
+					actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
+			else:
+				raise Exception("HAVEN'T FOUND actor_dict")
 
-	# 	except KeyError as ke:
-	# 		if 'actor' in record_d:
-	# 			actor_dict = {
-	# 				'login' : record_d['actor']
-	# 			}
-	# 		else:
-	# 			raise Exception('KEYERROR: ' + str(ke))
+		except KeyError as ke:
+			if 'actor' in record_d:
+				actor_dict = {
+					'login' : record_d['actor']
+				}
+			else:
+				raise Exception('KEYERROR: ' + str(ke))
 
-	# 	full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
+		full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
 
-	# 	if isinstance(actor_dict, dict):
-	# 		actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
-	# 	else:
-	# 		raise Exception('actor_dict (%s) IS NOT A DICT!' % (str(actor_dict)))
+		if isinstance(actor_dict, dict):
+			actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
+		else:
+			raise Exception('actor_dict (%s) IS NOT A DICT!' % (str(actor_dict)))
 
 	except Exception as e:
 		print('record_d (%s): %s' % (type(record_d), str(record_d)))
