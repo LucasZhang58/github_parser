@@ -152,13 +152,13 @@ class Database:
 			traceback.print_exc()
 			raise Exception("Failed to get all repos from DB: %s!" % (str(e)))
 
-	def get_repo_or_actor(self, repo_fullname):
+	def get_repo_or_actor(self, repo_or_actor_fullname, data_type):
 		try:
-			val = self.__rc.hgetall('repo%' + repo_fullname)
+			val = self.__rc.hgetall(data_type + '%' + repo_or_actor_fullname)
 		#	print('val: ' + str(val))
 			return self.decode_redis(val)
 		except Exception as e:
-			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
+			raise Exception('Failed to get repo %s: %s' % (repo_or_actor_fullname, str(e)))
 
 	def get_data(self, repo_fullname, data_type):
 		try:
@@ -168,6 +168,22 @@ class Database:
 		except Exception as e:
 			raise Exception('Failed to get repo %s data on %s: %s' % \
 				(repo_fullname, data_type, str(e)))
+
+
+	def get_value(self, repo_fullname, data_type, db, created_at):
+		try:
+			
+			key = repo_fullname + '%' + data_type
+			#print(key)
+			val = self.__rc.hgetall(repo_fullname + '%' + data_type + '%' + created_at)
+			#print('val: ' + str(val))
+			return self.decode_redis(val)
+		except Exception as e:
+			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
+
+	def get_final(self, repo_fullname, data_type, db, created_at):
+		pass
+
 
 	##################################################################
 	# Add GitHub repo data
@@ -259,20 +275,20 @@ class Database:
 
 	def get_all_data_type(self, data_type):
 		try:
-			key_pattern = data_type + '%*'
+			key_pattern = data_type +'%'
 			print(key_pattern)
 
-			for batch in self.__get_matching_batches(key_pattern):
+			for batch in self.__get_matching_batches(key_pattern+ '*'):
 				for idx, val in utils.for_each_item_int(list(batch)):
 					if not val:
 						continue
 					val = val.decode('utf-8')
 					if not val.startswith(key_pattern):
-						raise Exception('Invalid repo name %s!' % (val))
+						raise Exception('Invalid %s name %s!' % (data_type, val))
 					yield val.replace(key_pattern,'')
 		except Exception as e:
 			traceback.print_exc()
-			raise Exception("Failed to get all repos from DB: %s!" % (str(e)))
+			raise Exception("Failed to get all %ss from DB: %s!" % (data_type, str(e)))
 
 	def get_data_type_data(self, data_type_fullname):
 		try:
@@ -281,213 +297,6 @@ class Database:
 		except Exception as e:
 			raise Exception('Failed to get repo %s: %s' % (data_type_fullname, str(e)))
 
-
-	# def get_repo(self, repo_fullname):
-	# 	try:
-	# 		val = self.__rc.hgetall('repo%' + repo_fullname)
-	# 		return self.decode_redis(val)
-	# 	except Exception as e:
-	# 		raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
-
-	# def get_all_stars(self):
-
-	# 	try:
-
-	# 		key_pattern = '*%star%*'
-	
-	# 		#print("self.__get_matching_batches(key_pattern): " + str(self.__get_matching_batches(key_pattern)))
-
-	# 		for batch in self.__get_matching_batches(key_pattern):
-
-	# 			for idx, val in utils.for_each_item_int(list(batch)):
-	
-	# 				if not val:
-	# 					continue
-	# 				val = val.decode('utf-8')
-	
-	# 				if not val.startswith('star%'):
-	# 					raise Exception('Invalid star name %s!' % (val))
-	# 				yield val.replace('%star%','')
-		
-					
-	# 	except Exception as e:
-	# 		traceback.print_exc()
-	# 		raise Exception("Failed to get all stars from DB: %s!" % (str(e)))
-
-	# def get_star(self, star_fullname):
-	# 	try:
-	# 		val = self.__rc.hgetall('%star%' + star_fullname)
-	# 		return self.decode_redis(val)
-	# 	except Exception as e:
-	# 		raise Exception('Failed to get stars %s: %s' % (star_fullname, str(e)))
-
-	# def get_fork(self, fork_fullname):
-	# 	try:
-	# 		val = self.__rc.hgetall('forks%' + fork_fullname)
-	# 		return self.decode_redis(val)
-	# 	except Exception as e:
-	# 		raise Exception('Failed to get forks %s: %s' % (fork_fullname, str(e)))
-
-	def get_all_stars(self):
-		try:
-			key_pattern = '%stars%'
-
-			for batch in self.__get_matching_batches(key_pattern):
-				for idx, val in utils.for_each_item_int(list(batch)):
-					if not val:
-						continue
-					val = val.decode('utf-8')
-					if not val.startswith('stars%'):
-						raise Exception('Invalid repo name %s!' % (val))
-					yield val.replace('repo%','')
-		except Exception as e:
-			traceback.print_exc()
-			raise Exception("Failed to get all repos from DB: %s!" % (str(e)))
-
-# 	def get_star(self, star_fullname):# returns the created_at
-# 		try:
-# 			#val = self.__rc.hgetall('repo%' + star_fullname)
-# 			val = self.__rc.hgetall(star_fullname + '%stars%')
-# 		#	print('val: ' + str(val))
-# 			return self.decode_redis(val)
-# 		except Exception as e:
-# 			raise Exception('Failed to get repo %s: %s' % (star_fullname, str(e)))
-
-
-	def get_value(self, repo_fullname, data_type, db, created_at):
-		try:
-			
-			key = repo_fullname + '%stars%'
-			#print(key)
-			val = self.__rc.hgetall(repo_fullname + '%stars%' + created_at)
-			#print('val: ' + str(val))
-			return self.decode_redis(val)
-		except Exception as e:
-			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
-
-
-# ##################################################################
-# unit test
-##################################################################
-def test():
-	db = Database()
-#	print('*%star%*')
-	# print(db)
-	# size = db.size()
-	# print(size)
-	# for i in db.get_all_repos():
-	# 	repo_data = db.get_repo(i)
-	# 	print(repo_data)
-	# print(db.get_all_stars())
-
-
-	for repo_fullname in db.get_all_repos():
-		repo_data = db.get_repo(repo_fullname)
-		# print(repo_data)
-		print(repo_fullname)
-		repo_data[repo_fullname] = {}
-		curr_dict = {repo_data : {}}
-
-		for branch_created_at in db.get_data(repo_fullname, 'branches'):
-			val = db.get_value(repo_fullname, 'branches', db, branch_created_at)
-			print(val)
-
-		for tag_created_at in db.get_data(repo_fullname, 'tags'):
-			val = db.get_value(repo_fullname, 'tags', db, tag_created_at)
-			print(val)
-
-		for release_created_at in db.get_data(repo_fullname, 'releases'):
-			val = db.get_value(repo_fullname, 'releases', db, release_created_at)
-			print(val)
-
-
-		for fork_created_at in db.get_data(repo_fullname, 'forks'):
-			val = db.get_value(repo_fullname, 'forks', db, fork_created_at)
-			print(val)
-
-
-		for star_created_at in db.get_data(repo_fullname, 'stars'):
-			val = db.get_value(repo_fullname, 'stars', db, star_created_at)
-			repo_data[repo_fullname] = val
-			print(val)
-
-		for issue_created_at in db.get_data(repo_fullname, 'issues'):
-			val = db.get_value(repo_fullname, 'issues', db, issue_created_at)
-			repo_data[repo_fullname] = val
-			print(val)
-
-
-
-		for member_created_at in db.get_data(repo_fullname, 'members'):
-			val = db.get_value(repo_fullname, 'members', db, member_created_at)
-			repo_data[repo_fullname] = val
-			print(val)
-
-		for commit_created_at in db.get_data(repo_fullname, 'commits'):
-			val = db.get_value(repo_fullname, 'commits', db, commit_created_at)
-			repo_data[repo_fullname] = val
-			print(val)
-
-
-
-		print('####################################################################')
-
-
-
-	# for repo_fullname in db.get_all_repos():
-	# 	# repo_data = db.get_final_data(repo_fullname, 'stars', db)
-	# 	# print(repo_data)
-
-
-
-
-
-	# 	for repo_fullname in db.get_all_stars():
-	# 		#print(repo_fullname)
-	# 		data = db.get_star(repo_fullname)
-	# 		print(data)
-
-	# for star_fullname in db.get_all_stars():
-	# 	print('UIIIIIIIIIII')
-	# 	repo_data = db.get_star(star_fullname)
-	# 	print('OOOOOOOOOOOO')
-	# 	print(repo_data)
-
-	#for star in db.get_data(repo_fullname, 'stars'):
-	#       print(star)
-	#for fork in db.get_data(repo_fullname, 'forks'):
-	#       print(fork)
-	#for release in db.get_data(repo_fullname, 'releases'):
-	#       print(release)
-
-	
-
-
-
-
-
-
-
-
-
-	# for star in db.get_all_data_type('stars'):
- 	# 	print(star)
-
-	# for data_type_fullname in db.get_all_data_type('stars'):
-	# 	star_data = db.get_data_type_data(data_type_fullname)
-	# 	print(star_data)
-		# for star in db.get_all_data_type('stars'):
-		# 	print(star)
-
-
-
-
-	# for star in db.get_data(repo_fullname, 'stars'):
-	#       print(star)
-	#for fork in db.get_data(repo_fullname, 'forks'):
-	#       print(fork)
-	#for release in db.get_data(repo_fullname, 'releases'):
-	#       print(release)
 
 ##################################################################
 # Main
