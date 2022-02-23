@@ -20,30 +20,30 @@ import commits_file
 ######################
 def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, db, member_past_repo_names, member_dict, commits, commit_past_repo_names, ref_past_repo_names):
 
-        if 'WatchEvent' == record_d['type']:
-                stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
+        # if 'WatchEvent' == record_d['type']:
+        #         stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
 
-        elif 'ReleaseEvent' == record_d['type']:
-                releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
+        # elif 'ReleaseEvent' == record_d['type']:
+        #         releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
 
-        elif 'ForkEvent' == record_d['type']:
-               forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
+        # elif 'ForkEvent' == record_d['type']:
+        #        forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
 
-        elif 'CreateEvent' == record_d['type']:
-                refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
+        # elif 'CreateEvent' == record_d['type']:
+        #         refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
-        elif 'IssuesEvent' == record_d['type']:
-                #pass
-                # TODO enable this
-                issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
+        # elif 'IssuesEvent' == record_d['type']:
+        #         #pass
+        #         # TODO enable this
+        #         issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
         if 'PushEvent' == record_d['type']:
                 #pass
                 # TODO enable this
                 commits_file.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
-        elif 'MemberEvent' == record_d['type']:
-                members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
+        # elif 'MemberEvent' == record_d['type']:
+        #         members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
 
         # # skip these events
         # elif record_d['type'] in ['IssueCommentEvent', 'PullRequestEvent', 'PullRequestReviewCommentEvent', 'GollumEvent', 'CommitCommentEvent']:

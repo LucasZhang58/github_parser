@@ -12,468 +12,97 @@ import name
 # Push Events
 ##########################
 
-
-
-def get_author_login_helper(in_dict, record_d):
-        if 'actor' in in_dict:
-                if isinstance(in_dict['actor'], str):
-                        return in_dict['actor']
-                elif isinstance(in_dict['actor'], dict):
-                        if 'login' in in_dict['actor']:
-                                return in_dict['actor']['login']
-                        else:
-                                # frameinfo = getframeinfo(currentframe())
-                                # print(frameinfo.filename, frameinfo.lineno)	
-                                # print("login is not in in_dict['actor']")
-                                # print('record_d: ' + str(record_d))
-                                return
-
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("in_dict['actor'] is not a string nor a dict")
-                        print('record_d: ' + str(record_d))
-                        return
-
-        elif 'actor_attributes' in in_dict:
-                if isinstance(in_dict['actor_attributes'], dict):
-                        return in_dict['actor_attributes']['login']
-
-                elif isinstance(in_dict['actor_attributes'], str):
-                        print("'{}'['actor_attributes'] is a string!!!!!!".format(in_dict))
-                        print('"{}": '.format(in_dict) + str(in_dict) + 'FFFFFFFFFFFFFFFFFFFFF')
-                        return
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("in_dict['actor_attributes'] is not a string nor a dict")
-                        print('record_d: ' + str(record_d))
-                        return
-
-        elif 'org' in in_dict:
-                if isinstance(in_dict['org'], dict):
-                        return in_dict['org']['login']
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("in_dict['org'] is not a dict")
-                        print('record_d: ' + str(record_d))
-                        return
-
-        else:
-                frameinfo = getframeinfo(currentframe())
-                print(frameinfo.filename, frameinfo.lineno)	
-                print("author email is not in indict!!!!!!!")
-                print('"{}": '.format(in_dict) + str(in_dict) + 'EEEEEEEEEEEEEEEEEE')
-                return
-
-def get_message_helper(in_dict, record_d):
-        if 'commits' in in_dict:
-                if isinstance(in_dict['commits'][0], dict):
-                        return in_dict['commits'][0]['message']
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("in_dict['commits'][0] is not a dict")
-                        print('record_d: ' + str(record_d))
-                        return
-
-        elif 'shas' in in_dict:
-                if in_dict['shas'][0]:
-                        if isinstance(in_dict['shas'][0], list):
-                                return in_dict['shas'][0][2]
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)
-                                print("in_dict['shas'][0] is not a list")
-                                print('record_d: ' + str(record_d))
-                                return
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("in_dict['shas'][0] is an empty list")
-                        print('record_d: ' + str(record_d))
-                        return
-                        
-        else:
-                frameinfo = getframeinfo(currentframe())
-                print(frameinfo.filename, frameinfo.lineno)	
-                print("message is not in indict!!!!!!!")
-                print('"{}": '.format(in_dict) + str(in_dict) + 'EEEEEEEEEEEEEEEEEE')
-                return
-
-                # commit_id
-def get_commit_id_helper(in_dict, record_d):
-        if 'commits' in in_dict:
-                if in_dict['commits']:
-                        if isinstance(in_dict['commits'][0], dict):
-                                return in_dict['commits'][0]['sha']
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)	
-                                print("in_dict['commits'][0] is not a dict")
-                                print('record_d: ' + str(record_d))
-                                return
-                else:
-                        # frameinfo = getframeinfo(currentframe())
-                        # print(frameinfo.filename, frameinfo.lineno)	
-                        # print("in_dict['commits'] is an empty list")
-                        # print('record_d: ' + str(record_d))
-                        return
-
-
-        elif 'shas' in in_dict:
-                if in_dict['shas']:
-                        if isinstance(in_dict['shas'][0], list):
-                                return in_dict['shas'][0][1]
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)	
-                                print("in_dict['shas'][0] is not a dict")
-                                print('record_d: ' + str(record_d))
-                                return
-                else:
-                        return
-                                # frameinfo = getframeinfo(currentframe())
-                                # print(frameinfo.filename, frameinfo.lineno)	
-                                # print("in_dict['shas'] list is empty")
-                                # print('record_d: ' + str(record_d))
-
-        else:
-                frameinfo = getframeinfo(currentframe())
-                print(frameinfo.filename, frameinfo.lineno)	
-                print("commit_id is not in indict!!!!!!!")
-                print('"{}": '.format(in_dict) + str(in_dict) + 'EEEEEEEEEEEEEEEEEE')
-                return
-
-
-def get_author_name_helper(in_dict, record_d):
-        if 'actor_attributes' in in_dict:
-                if isinstance(in_dict['actor_attributes'], dict):
-                        if 'name' in in_dict['actor_attributes']:
-                                return in_dict['actor_attributes']['name']
-                        elif 'payload' in in_dict:
-                                if 'shas' in in_dict['payload']:
-                                        if in_dict['payload']['shas']:
-                                                if in_dict['payload']['shas'][0]:
-                                                        return in_dict['payload']['shas'][0][3]
-                                                else:
-                                                        frameinfo = getframeinfo(currentframe())
-                                                        print(frameinfo.filename, frameinfo.lineno)
-                                                        print("in_dict['payload']['shas'][0] is an empty list")
-                                                        print('record_d: ' + str(record_d))
-                                                        return
-                                        else:
-                                                # frameinfo = getframeinfo(currentframe())
-                                                # print(frameinfo.filename, frameinfo.lineno)
-                                                # print("in_dict['payload']['shas'] is an empty list")
-                                                # print('record_d: ' + str(record_d))
-                                                return
-                                else:
-                                        frameinfo = getframeinfo(currentframe())
-                                        print(frameinfo.filename, frameinfo.lineno)
-                                        print("shas not in in_dict['payload']")
-                                        print('record_d: ' + str(record_d))
-                                        return
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)
-                                print("name is not in in_dict['actor_attributes']")
-                                print('record_d: ' + str(record_d))
-                                return
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print('actor_attributes is not in in_dict')
-                        print('record_d: ' + str(record_d))
-                        return
-
-        elif 'commits' in in_dict:
-                if in_dict['commits']:
-                        if isinstance(in_dict['commits'][0], dict):
-                                if isinstance(in_dict['commits'][0]['author'], dict):
-                                        return in_dict['commits'][0]['author']['name']
-                                else:
-                                        frameinfo = getframeinfo(currentframe())
-                                        print(frameinfo.filename, frameinfo.lineno)
-                                        print("in_dict['commits'][0]['author'] is not a dict")
-                                        print('record_d: ' + str(record_d))
-                                        return
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)
-                                print("in_dict['commits'][0] is not a dict")
-                                print('record_d: ' + str(record_d))
-                                return
-                else:
-                        # frameinfo = getframeinfo(currentframe())
-                        # print(frameinfo.filename, frameinfo.lineno)
-                        # print("in_dict['commits'] is an empty list")
-                        # print('record_d: ' + str(record_d))
-                        return
-
-        elif 'shas' in in_dict:
-
-                if isinstance(in_dict['shas'][0], list):
-                        return in_dict['shas'][0][3]
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("author name is not in in_dict['shas'][0]")
-                        print('record_d: ' + str(record_d))
-                        return
-        elif 'payload' in in_dict:
-                if 'shas' in in_dict['payload']:
-                        if in_dict['payload']['shas']:
-                                if isinstance(in_dict['payload']['shas'][0], list):
-                                        return in_dict['payload']['shas'][0][3]
-                                else:
-                                        # frameinfo = getframeinfo(currentframe())
-                                        # print(frameinfo.filename, frameinfo.lineno)
-                                        # print("author name is not in in_dict['payload']['shas'][0]")
-                                        # print('record_d: ' + str(record_d))
-                                        return
-                        else:
-                                # frameinfo = getframeinfo(currentframe())
-                                # print(frameinfo.filename, frameinfo.lineno)
-                                # print("in_dict['payload']['shas'] is an empty list")
-                                # print('record_d: ' + str(record_d))
-                                return
-
-                elif 'commits' in in_dict['payload']:
-                        if isinstance(in_dict['payload']['commits'], list):
-                                if in_dict['payload']['commits']:
-                                        if isinstance(in_dict['payload']['commits'][0]['author'], dict):
-                                                return in_dict['payload']['commits'][0]['author']['name']
-                                        else:
-                                                # frameinfo = getframeinfo(currentframe())
-                                                # print(frameinfo.filename, frameinfo.lineno)
-                                                # print("in_dict['payload']['commits'][0]['author'] is not a dict")
-                                                # print('record_d: ' + str(record_d))
-                                                return
-                                else:
-                                        # frameinfo = getframeinfo(currentframe())
-                                        # print(frameinfo.filename, frameinfo.lineno)
-                                        # print("in_dict['payload']['commits'] is an empty list")
-                                        # print('record_d: ' + str(record_d))
-                                        return
-                        else:
-                                # frameinfo = getframeinfo(currentframe())
-                                # print(frameinfo.filename, frameinfo.lineno)
-                                # print("in_dict['payload']['commits'] is not a list")
-                                # print('record_d: ' + str(record_d))
-                                return
-
-
-                else:
-                        # frameinfo = getframeinfo(currentframe())
-                        # print(frameinfo.filename, frameinfo.lineno)
-                        # print("shas is not in in_dict['payload']")
-                        # print('record_d: ' + str(record_d))
-                        return
-
-
-        else:
-                frameinfo = getframeinfo(currentframe())
-                print(frameinfo.filename, frameinfo.lineno)
-                print("author name is not in indict!!!!!!!")
-                print('"{}": '.format(str(in_dict)) + str(in_dict) + 'EEEEEEEEEEEEEEEEEE')	
-                print('record_d: ' + str(record_d))
-                return
-
-def get_author_email_helper(in_dict, record_d):
-        if 'actor_attributes' in in_dict:
-                if isinstance(in_dict['actor_attributes'], dict):
-                        if 'email' in in_dict['actor_attributes']:
-                                return in_dict['actor_attributes']['email']
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)
-                                print("email is not in in_dict['actor_attributes']")
-                                print('record_d: ' + str(record_d))
-                                return
-
-                elif isinstance(in_dict['actor_attributes'], str):
-                        print("'{}'['actor_attributes'] is a string!!!!!!".format(in_dict))
-                        print('"{}": '.format(in_dict) + str(in_dict) + 'FFFFFFFFFFFFFFFFFFFFF')
-                        return
-                else:
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print("in_dict['actor_attributes'] is neither a dict nor string")
-                        print('record_d: ' + str(record_d))
-                        return
-
-        elif 'commits' in in_dict:      
-                if in_dict['commits']:
-                        if isinstance(in_dict['commits'][0]['author'], dict):
-                                return in_dict['commits'][0]['author']['email']
-                        else:
-                                frameinfo = getframeinfo(currentframe())
-                                print(frameinfo.filename, frameinfo.lineno)	
-                                print("in_dict['commits'][0]['author'] is not a dict")
-                                print('record_d: ' + str(record_d))
-                                return
-                else:
-                        # frameinfo = getframeinfo(currentframe())
-                        # print(frameinfo.filename, frameinfo.lineno)
-                        # print("in_dict['commits'] is an empty list")
-                        # print('record_d: ' + str(record_d))
-                        return
-
-
-        else:
-                frameinfo = getframeinfo(currentframe())
-                print(frameinfo.filename, frameinfo.lineno)	
-                print("author email is not in indict!!!!!!!")
-                print('"{}": '.format(in_dict) + str(in_dict) + 'EEEEEEEEEEEEEEEEEE')
-                return
-
-def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names):
+def shas_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, element):
         commited_at = created_at
         author_name = None
         author_email = None
         message = None
+        commit_id = None
 
-        # frameinfo = getframeinfo(currentframe())
-        # print(frameinfo.filename, frameinfo.lineno)
-        try:
-                # author name
-                if 'shas' in json_payload:
-                        if json_payload['shas']:
-                                if isinstance(json_payload['shas'][0], list):
-                                       # print('prwgfqregtngjtngjiwengjnt4jgnwgnjengnerjogenrnfornj')
-                                        author_name = get_author_name_helper(json_payload, record_d)
-                                else:
-                                        frameinfo = getframeinfo(currentframe())
-                                        print(frameinfo.filename, frameinfo.lineno)
-                                        print("json_payload['shas'][0] is not a list")
-                                        print('json_payload: ' + str(json_payload))
-                        elif 'actor_attributes' in json_payload:
-                                author_name = get_author_name_helper(json_payload, record_d)
-                        elif 'actor_attributes' in record_d:
-                                author_name = get_author_name_helper(record_d, record_d)
-                        else:
-                                author_name = None
-                                # frameinfo = getframeinfo(currentframe())
-                                # print(frameinfo.filename, frameinfo.lineno)
-                                # print("json_payload['shas'][0] is an empty list")
-                                # print('record_d: ' + str(record_d))
-                if 'shas' in record_d:
-                        author_name = get_author_name_helper(record_d, record_d)
-                if 'commits' in json_payload:
-                        author_name = get_author_name_helper(json_payload, record_d)
-                if 'commits' in record_d:
-                        author_name = get_author_name_helper(record_d, record_d)
-                if 'actor_attributes' in json_payload:
-                        author_name = get_author_name_helper(json_payload, record_d)
-                if 'actor_attributes' in record_d:
-                        author_name = get_author_name_helper(record_d, record_d)
-                elif 'actor' in record_d:
-                        author_name = get_author_name_helper(record_d, record_d)
-                elif 'actor' in json_payload:
-                        author_name = get_author_name_helper(json_payload, record_d)
-                else:
-                        print('actor is not in record_d nor payload')
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print('record_d: ' + str(record_d))
+        commit_id = element[0]
 
-                # author email
-                if 'actor_attributes' in record_d:
-                        author_email = get_author_email_helper(record_d, record_d)
-                elif 'commits' in json_payload:
-                        author_email = get_author_email_helper(json_payload, record_d)
-                elif 'actor_attributes' in json_payload:
-                        author_email = get_author_email_helper(json_payload, record_d)
-                else:
-                        pass
-                        # print('actor_attributes is not in record_d nor payload')
-                        # frameinfo = getframeinfo(currentframe())
-                        # print(frameinfo.filename, frameinfo.lineno)
-                        # print('record_d: ' + str(record_d))
+        author_email = element[1]
+
+        message = element[2]
+
+        author_name = element[3]
+
+        add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, author_name, author_email, message, commit_id)
 
 
-                # author_login
-                if 'actor' in record_d:
-                        author_login = get_author_login_helper(record_d, record_d)
-                elif 'actor' in json_payload:
-                        author_login = get_author_login_helper(json_payload, record_d)
-                elif 'org' in record_d:
-                        author_login = get_author_login_helper(record_d, record_d)
-                elif 'org' in json_payload:
-                        author_login = get_author_login_helper(json_payload, record_d)
-                elif 'actor_attributes' in record_d:
-                        author_login = get_author_login_helper(record_d, record_d)
-                elif 'actor_attributes' in json_payload:
-                        author_login = get_author_login_helper(json_payload, record_d)
-                else:
-                        print('actor, org, and actor_attributes are in neither record nor payload')
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print('record_d: ' + str(record_d))
+def commits_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, element):
+        commited_at = created_at
+        author_name = None
+        author_email = None
+        message = None
+        commit_id = None
+
+        commit_id = element['sha']
+
+        author_email = element['author']['email']
+
+        message = element['message']
+
+        author_name = element['author']['name']
+
+        add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, author_name, author_email, message, commit_id)
 
 
-
-                # message
-                if 'message' in record_d:
-                        author_email = get_author_email_helper(record_d, record_d)
-                        print('message found in record_d!')
-
-                elif 'message' in json_payload:
-                        author_email = get_author_email_helper(json_payload, record_d)
-                        print('message found in json_payload!')
-
-                else:
-                        pass
-                        # print('message is not in record_d nor payload')
-                        # frameinfo = getframeinfo(currentframe())
-                        # print(frameinfo.filename, frameinfo.lineno)
-                        # print('record_d: ' + str(record_d))
-
-                
-
-                # commit_id
-                if 'shas' in json_payload:
-                        commit_id = get_commit_id_helper(json_payload, record_d)
-                elif 'shas' in record_d:
-                        commit_id = get_commit_id_helper(record_d, record_d)
-                elif 'commits' in json_payload:
-                        commit_id = get_commit_id_helper(json_payload, record_d)
-                elif 'commits' in record_d:
-                        commit_id = get_commit_id_helper(record_d, record_d)
-                else:
-                        print('commit_id not found in record_d nor payload')
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print('record_d: ' + str(record_d))
+def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names):
 
 
-        except Exception as e:
+        if 'shas' in json_payload:
+                type_name = 'shas'
+                if json_payload['shas']:
+                        for i in json_payload['shas']:
+                                shas_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, i)
+                     #   if isinstance
+
+        elif 'commits' in json_payload:
+                type_name = 'commits'
+                if json_payload['commits']:
+                        for i in json_payload['commits']:
+                                commits_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, i)
+
+        else:
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
-                print('PUSHEVENT_EXCEPTION: ' + str(e) + 'AAAAAAAAAAAAA')
+                print("Neither shas not commits is in json_payload!!!!!")
                 print('record_d: ' + str(record_d))
-                traceback.print_exc()
-                exit(1)
+
+
+def  add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, author_name, author_email, message, commit_id):
+
+        # if message:
+        #         print('message: ' + str(message))
+        #         print('record_d: ' + str(record_d))
 
         commit = {'commited_at' : created_at}
         if author_name:
+                # print('author_name EXIST!!!!')
+                # print('record_d: ' + str(record_d))
                 commit['author_name'] = author_name
+        # else:
+        #       #  print('author_name is NONE!!!!')
+        #         print('record_d: ' + str(record_d))
+
         if author_email:
                 commit['author_email'] = author_email
-        if author_login:
-                commit['author_login'] = author_login
-        
+        # else:
+        #         print('author_email is NONE!!!!')
+
         if message:
                 commit['message'] =  message
+        # else:
+        #         print('message is NONE!!!!')
 
         if commit_id:
                 commit['commit_id'] =  commit_id
+        # else:
+        #         print('commit_id is NONE!!!!')
 
         commits.append(commit)
         commits_dict = {
-                'repo_name' : repo_name,
                 'commits' : commits
         }
 
@@ -484,7 +113,7 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
         else:
                 commits_dict[full_repo_name].append(commit)
 
-        
+        # print('commits_dict: ' + str(commits_dict))        
   
         # save in the database
         try:
@@ -512,13 +141,13 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
                 except KeyError as ke:
                         frameinfo = getframeinfo(currentframe())
                         print(frameinfo.filename, frameinfo.lineno)	
-                        print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
+                        print('KEYERROR PUSHEVENT_EXCEPTION: ' + str(ke))
                         exit(1)
 
         except Exception as e:
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
-                print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
+                print('ERROR PUSHEVENT_EXCEPTION: ' + str(e))
                 traceback.print_exc()
                 exit(1)
 
@@ -526,10 +155,6 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
                 repos.get_Repo(full_repo_name, created_at, json_payload, record_d, r_dict, db)
         else:
                 raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
-
-
-
-
 
         # actor making the releasing
         try:
@@ -551,12 +176,12 @@ def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, co
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
                 print('record_d: ' + str(record_d))
-                print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
+                print('KEYERROR PUSHEVENT_EXCEPTION: ' + str(ke))
                 exit(1)
         except Exception as e:
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
-                print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
+                print('ERROR PUSHEVENT_EXCEPTION: ' + str(e))
                 traceback.print_exc()
                 exit(1)
 

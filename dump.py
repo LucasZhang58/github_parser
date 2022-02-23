@@ -68,11 +68,6 @@ def write_data(repo_name, value, output_path, type_name):
         with open(completeName, 'w+') as f:
                 f.write(output_file_data)
         
-
-
-
-
-
 # ##################################################################
 # Dump repo schema data from Redis to files
 ####################################################################
@@ -81,35 +76,35 @@ def get_repo_schema(output_path):
 
         for repo_fullname in db.get_all_repos():
 
-                repo_data = db.get_repo_or_actor(repo_fullname, 'repo')
-                write_data(repo_fullname, repo_data, output_path, 'repos')
+                # repo_data = db.get_repo_or_actor(repo_fullname, 'repo')
+                # write_data(repo_fullname, repo_data, output_path, 'repos')
         
-                for branch_created_at in db.get_data(repo_fullname, 'branches'):
-                        val = db.get_value(repo_fullname, 'branches', db, branch_created_at)
-                        write_data(repo_fullname, val, output_path, 'branches')
+                # for branch_created_at in db.get_data(repo_fullname, 'branches'):
+                #         val = db.get_value(repo_fullname, 'branches', db, branch_created_at)
+                #         write_data(repo_fullname, val, output_path, 'branches')
 
-                for tag_created_at in db.get_data(repo_fullname, 'tags'):
-                        val = db.get_value(repo_fullname, 'tags', db, tag_created_at)
-                        write_data(repo_fullname, val, output_path, 'tags')
+                # for tag_created_at in db.get_data(repo_fullname, 'tags'):
+                #         val = db.get_value(repo_fullname, 'tags', db, tag_created_at)
+                #         write_data(repo_fullname, val, output_path, 'tags')
 
-                for release_created_at in db.get_data(repo_fullname, 'releases'):
-                        val = db.get_value(repo_fullname, 'releases', db, release_created_at)
-                        write_data(repo_fullname, val, output_path, 'releases')
+                # for release_created_at in db.get_data(repo_fullname, 'releases'):
+                #         val = db.get_value(repo_fullname, 'releases', db, release_created_at)
+                #         write_data(repo_fullname, val, output_path, 'releases')
                 
-                for fork_created_at in db.get_data(repo_fullname, 'forks'):
-                        val = db.get_value(repo_fullname, 'forks', db, fork_created_at)
-                        write_data(repo_fullname, val, output_path, 'forks')
+                # for fork_created_at in db.get_data(repo_fullname, 'forks'):
+                #         val = db.get_value(repo_fullname, 'forks', db, fork_created_at)
+                #         write_data(repo_fullname, val, output_path, 'forks')
 
-                for star_created_at in db.get_data(repo_fullname, 'stars'):
-                        val = db.get_value(repo_fullname, 'stars', db, star_created_at)
-                        write_data(repo_fullname, val, output_path, 'stars')
+                # for star_created_at in db.get_data(repo_fullname, 'stars'):
+                #         val = db.get_value(repo_fullname, 'stars', db, star_created_at)
+                #         write_data(repo_fullname, val, output_path, 'stars')
 
-                for issue_created_at in db.get_data(repo_fullname, 'issues'):
-                        val = db.get_value(repo_fullname, 'issues', db, issue_created_at)
-                        write_data(repo_fullname, val, output_path, 'issues')
+                # for issue_created_at in db.get_data(repo_fullname, 'issues'):
+                #         val = db.get_value(repo_fullname, 'issues', db, issue_created_at)
+                #         write_data(repo_fullname, val, output_path, 'issues')
 
-                for member in db.get_data(repo_fullname, 'members'):
-                        write_data(repo_fullname, member, output_path, 'members')
+                # for member in db.get_data(repo_fullname, 'members'):
+                #         write_data(repo_fullname, member, output_path, 'members')
 
                 for commit_created_at in db.get_data(repo_fullname, 'commits'):
                         val = db.get_value(repo_fullname, 'commits', db, commit_created_at)
@@ -136,7 +131,7 @@ def get_org_schema(output_path):
 ##################################################################
 if __name__ == "__main__":
         get_repo_schema('/opt/lucas/red_output')
-        get_user_schema('/opt/lucas/red_output')
-        get_org_schema('/opt/lucas/red_output')
+        # get_user_schema('/opt/lucas/red_output')
+        # get_org_schema('/opt/lucas/red_output')
 
         
