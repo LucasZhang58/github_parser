@@ -9,6 +9,29 @@ import json
 
 
 
+# def pypy_pkg_write_data(repo_name, value, output_path, type_name):
+
+
+#         if '/' in repo_name:
+#                 user_id, repo_name = repo_name.split('/')
+#         else:
+#                 repo_name = repo_name
+#                 user_id = None
+
+#         # check if user dir exist
+#         if user_id != None:
+#                 user_dir_path = os.path.join(output_path, user_id)
+#         else:
+#                 user_dir_path = output_path
+#         if not os.path.exists(user_dir_path):
+#                 os.mkdir(user_dir_path)
+
+#         repo_dir_path = os.path.join(user_dir_path, repo_name)
+#         if not os.path.exists(repo_dir_path):
+#                 os.mkdir(repo_dir_path)
+
+#         completeName = os.path.join(repo_dir_path, type_name + ".json")
+        
 
 
 def write_data(repo_name, value, output_path, type_name):
@@ -67,6 +90,8 @@ def write_data(repo_name, value, output_path, type_name):
         output_file_data = json.dumps(data)
         with open(completeName, 'w+') as f:
                 f.write(output_file_data)
+
+        
         
 # ##################################################################
 # Dump repo schema data from Redis to files

@@ -2,7 +2,7 @@
 # QUEUING = SingleProcess
 QUEUING = ProcessPool
 #QUEUING = Celery
-DRYRUN = true
+DRYRUN = false
 # if true, then it won't store in redis
 
 [DB]

@@ -4,6 +4,7 @@ import gzip_github_parser as ghp
 import traceback
 from db import Database
 import multiprocess as mp
+import csv
 
 import config
 
@@ -12,9 +13,9 @@ import config
 ##############################
 def main():
 
-	# validate number of inputs
-	if len(sys.argv) != 2:
-		print("USAGE: python3 %s <path-to-dir-containing-gharchive-gzip-files>" % (sys.argv[0]))
+    	# validate number of inputs
+	if len(sys.argv) < 2 or len(sys.argv) > 3:
+		print("USAGE: python3 %s <path-to-dir-containing-gharchive-gzip-files> [<path-to-csv-file-containing-repos>]" % (sys.argv[0]))
 		exit(1)
 
 	# validate input path
@@ -52,12 +53,24 @@ def main():
 		traceback.print_exc()
 		exit(1)
 
-	args = [input_path, db]
+	# filter: only parse data for these repos
+	repo_list = []
+	if len(sys.argv) == 3:
+		with open(sys.argv[2], newline='') as csvfile:
+			reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+			for row in reader:
+				repo_list.append(row[1])
+
+		print("Collected a list of %d filtered repos" % (len(repo_list)))
+
+	args = [input_path, db, repo_list]
 	if mode == "ProcessPool":
 		mp.start_parallel_workers(gzip_file_list, ghp.parse_gzip_file, args)
 	elif mode == "SingleProcess":
 		for f in gzip_file_list:
 			ghp.parse_gzip_file(f, args, None)
+
+	
 
 ##############################
 # call the main function
