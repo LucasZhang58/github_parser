@@ -11,12 +11,12 @@ def get_issue_time_at_helper_a(in_dict, type_at, in_dict_2, created_at):
 
         if in_dict['action'] == type_at and isinstance(in_dict_2, dict):
                 if type_at == 'opened':
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
+                        # frameinfo = getframeinfo(currentframe())
+                        # print(frameinfo.filename, frameinfo.lineno)
                         return in_dict_2['created_at']
                 elif type_at == 'closed':
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
+                        # frameinfo = getframeinfo(currentframe())
+                        # print(frameinfo.filename, frameinfo.lineno)
                         return in_dict_2['closed_at']
                 else:
                         print("record_d doesn't have 'action'")
@@ -30,12 +30,12 @@ def get_issue_time_at_helper_b(in_dict, type_at, created_at):
 
         if in_dict['action'] == type_at:
                 if type_at == 'opened':
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
+                        # frameinfo = getframeinfo(currentframe())
+                        # print(frameinfo.filename, frameinfo.lineno)
                         return in_dict['created_at']
                 elif type_at == 'closed':
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
+                        # frameinfo = getframeinfo(currentframe())
+                        # print(frameinfo.filename, frameinfo.lineno)
                         return in_dict['closed_at']
                 else:
                         print("in_dict doesn't have 'action'")
