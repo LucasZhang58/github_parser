@@ -7,28 +7,35 @@ import sys
 from inspect import currentframe, getframeinfo
 from getters import actors, repos
 import name
-
 ##########################
 # Push Events
 ##########################
-
 def shas_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, element):
         commited_at = created_at
         author_name = None
         author_email = None
         message = None
         commit_id = None
+        try:
+                commit_id = element[0]
 
-        commit_id = element[0]
+                author_email = element[1]
 
-        author_email = element[1]
+                message = element[2]
 
-        message = element[2]
-
-        author_name = element[3]
-
+                author_name = element[3]
+        except KeyError as ke:
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print('ERROR PUSHEVENT_EXCEPTION: ' + str(ke))
+                traceback.print_exc()
+        except Exception as e:
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print('ERROR PUSHEVENT_EXCEPTION: ' + str(e))
+                traceback.print_exc()
+                exit(1)
         add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, author_name, author_email, message, commit_id)
-
 
 def commits_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, element):
         commited_at = created_at
@@ -36,72 +43,64 @@ def commits_helper(repo_name, created_at, json_payload, record_d, db, commits, c
         author_email = None
         message = None
         commit_id = None
+        try:
+                commit_id = element['sha']
 
-        commit_id = element['sha']
+                author_email = element['author']['email']
 
-        author_email = element['author']['email']
+                message = element['message']
 
-        message = element['message']
-
-        author_name = element['author']['name']
-
+                author_name = element['author']['name']
+        except KeyError as ke:
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print('ERROR PUSHEVENT_EXCEPTION: ' + str(ke))
+                traceback.print_exc()
+        except Exception as e:
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)	
+                print('ERROR PUSHEVENT_EXCEPTION: ' + str(e))
+                traceback.print_exc()
+                exit(1)
         add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, author_name, author_email, message, commit_id)
 
-
 def get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names):
-
 
         if 'shas' in json_payload:
                 type_name = 'shas'
                 if json_payload['shas']:
                         for i in json_payload['shas']:
                                 shas_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, i)
-                     #   if isinstance
-
+                
         elif 'commits' in json_payload:
                 type_name = 'commits'
                 if json_payload['commits']:
                         for i in json_payload['commits']:
                                 commits_helper(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, type_name, i)
-
         else:
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)	
                 print("Neither shas not commits is in json_payload!!!!!")
                 print('record_d: ' + str(record_d))
 
-
 def  add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names, author_name, author_email, message, commit_id):
 
-        # if message:
-        #         print('message: ' + str(message))
-        #         print('record_d: ' + str(record_d))
-
         commit = {'commited_at' : created_at}
+
         if author_name:
-                # print('author_name EXIST!!!!')
-                # print('record_d: ' + str(record_d))
                 commit['author_name'] = author_name
-        # else:
-        #       #  print('author_name is NONE!!!!')
-        #         print('record_d: ' + str(record_d))
 
         if author_email:
                 commit['author_email'] = author_email
-        # else:
-        #         print('author_email is NONE!!!!')
 
         if message:
                 commit['message'] =  message
-        # else:
-        #         print('message is NONE!!!!')
 
         if commit_id:
                 commit['commit_id'] =  commit_id
-        # else:
-        #         print('commit_id is NONE!!!!')
 
         commits.append(commit)
+        
         commits_dict = {
                 'commits' : commits
         }
@@ -113,8 +112,6 @@ def  add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commi
         else:
                 commits_dict[full_repo_name].append(commit)
 
-        # print('commits_dict: ' + str(commits_dict))        
-  
         # save in the database
         try:
                 db.add_data(full_repo_name, created_at, 'commits', commits_dict)
@@ -124,7 +121,6 @@ def  add_to_db(repo_name, created_at, json_payload, record_d, db, commits, commi
                 traceback.print_exc()
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)
-
 
         # check for repo and actor_attributes in a record
         if '"repo":' in str(record_d) and '"repository":' in str(record_d):
