@@ -14,6 +14,7 @@ import issues
 import members
 import refs
 import commits_file
+import name
   
 ######################
 # Parse Events
@@ -23,27 +24,27 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         # if 'WatchEvent' == record_d['type']:
         #         stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # if 'ReleaseEvent' == record_d['type']:
-        #         releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
+        if 'ReleaseEvent' == record_d['type']:
+                releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # if 'ForkEvent' == record_d['type']:
+        # elif 'ForkEvent' == record_d['type']:
         #        forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # if 'CreateEvent' == record_d['type']:
+        # elif 'CreateEvent' == record_d['type']:
         #         refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
         # if 'IssuesEvent' == record_d['type']:
-        # 	#pass
-        # 	# TODO enable this
-        # 	issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
+        #         #pass
+        #         # TODO enable this
+        #         issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
-        if 'PushEvent' == record_d['type']:
-        	#pass
-        	# TODO enable this
-        	commits_file.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
+        # if 'PushEvent' == record_d['type']:
+                # #pass
+                # # TODO enable this
+                # commits_file.get_PushEvent(repo_name, created_at, json_payload, record_d, db, commits, commit_past_repo_names)
 
-        # if 'MemberEvent' == record_d['type']:
-        # 	members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
+        # elif 'MemberEvent' == record_d['type']:
+        #         members.get_MemberEvent(repo_name, created_at, json_payload, record_d, db, member_past_repo_names, member_dict)
 
         # # skip these events
         # elif record_d['type'] in ['IssueCommentEvent', 'PullRequestEvent', 'PullRequestReviewCommentEvent', 'GollumEvent', 'CommitCommentEvent']:
@@ -59,6 +60,9 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
 def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
         input_path = args[0]
         db = args[1]
+        repo_list = args[2]
+ #       print(repo_list)
+
 
         member_past_repo_names = set()
         commit_past_repo_names = set()
@@ -88,7 +92,7 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
                                         except KeyError as ke:
                                                 continue
 
-                                # created_at
+
                                 try:
                                         created_at = record_d['created_at']
                                 except KeyError as ke:
@@ -100,10 +104,20 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
                                 except KeyError as ke:
                                         json_payload = None
 
+
+
+                                full_repo_name = name.get_full_repo_name(json_payload, record_d, repo_name)
+
+                                if full_repo_name not in repo_list:
+                                      #  print('repo_name: ' + str(repo_name))
+                                        continue
+
+                                print(full_repo_name)
+
                                 # parse records
                                 if repo_name != "test":
                                         parse_event(repo_name, created_at, json_payload, record_d, db,	member_past_repo_names, member_dict, commits, commit_past_repo_names, ref_past_repo_names)
-
+                                
                         except Exception as e:
                                 print('parse_event EXCEPTION: ' +  (str(e)))
                                 print('record_d: ' + str(record_d))

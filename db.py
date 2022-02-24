@@ -112,6 +112,27 @@ class Database:
 			print(frameinfo.filename, frameinfo.lineno)
 			exit(1)
 
+
+	##################################################################
+	# Get actors
+	##################################################################
+	def get_all_actors(self, actor_type):
+		try:
+			key_pattern = actor_type + '%*'
+
+			for batch in self.__get_matching_batches(key_pattern):
+				for idx, val in utils.for_each_item_int(list(batch)):
+					if not val:
+						continue
+					val = val.decode('utf-8')
+					if not val.startswith(actor_type + '%'):
+						raise Exception('Invalid %s name %s!' % (actor_type, val))
+					yield val.replace(actor_type + '%','')
+		except Exception as e:
+			traceback.print_exc()
+			raise Exception("Failed to get all %s from DB: %s!" % (actor_type, str(e)))
+
+
 	##################################################################
 	# Get repos
 	##################################################################
@@ -131,12 +152,13 @@ class Database:
 			traceback.print_exc()
 			raise Exception("Failed to get all repos from DB: %s!" % (str(e)))
 
-	def get_repo(self, repo_fullname):
+	def get_repo_or_actor(self, repo_or_actor_fullname, data_type):
 		try:
-			val = self.__rc.hgetall('repo%' + repo_fullname)
+			val = self.__rc.hgetall(data_type + '%' + repo_or_actor_fullname)
+		#	print('val: ' + str(val))
 			return self.decode_redis(val)
 		except Exception as e:
-			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
+			raise Exception('Failed to get repo %s: %s' % (repo_or_actor_fullname, str(e)))
 
 	def get_data(self, repo_fullname, data_type):
 		try:
@@ -146,6 +168,22 @@ class Database:
 		except Exception as e:
 			raise Exception('Failed to get repo %s data on %s: %s' % \
 				(repo_fullname, data_type, str(e)))
+
+
+	def get_value(self, repo_fullname, data_type, db, created_at):
+		try:
+			
+			key = repo_fullname + '%' + data_type
+			#print(key)
+			val = self.__rc.hgetall(repo_fullname + '%' + data_type + '%' + created_at)
+			#print('val: ' + str(val))
+			return self.decode_redis(val)
+		except Exception as e:
+			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
+
+	def get_final(self, repo_fullname, data_type, db, created_at):
+		pass
+
 
 	##################################################################
 	# Add GitHub repo data
@@ -223,23 +261,41 @@ class Database:
 			print(frameinfo.filename, frameinfo.lineno)
 			exit(1)
 
-##################################################################
-# unit test
-##################################################################
-def test():
-	db = Database()
-	#size = db.size()
-	#print(size)
 
-	for repo_fullname in db.get_all_repos():
-		repo_data = db.get_repo(repo_fullname)
-		print(repo_data)
-	#for star in db.get_data(repo_fullname, 'stars'):
-	#       print(star)
-	#for fork in db.get_data(repo_fullname, 'forks'):
-	#       print(fork)
-	#for release in db.get_data(repo_fullname, 'releases'):
-	#       print(release)
+	##################################################################
+	# Get Data From Redis
+	##################################################################
+
+	def get_out_data(self, repo_fullname, data_type):
+		try:
+			val = self.__rc.hgetall( data_type + '%' + repo_fullname)
+			return self.decode_redis(val)
+		except Exception as e:
+			raise Exception('Failed to get repo %s: %s' % (repo_fullname, str(e)))
+
+	def get_all_data_type(self, data_type):
+		try:
+			key_pattern = data_type +'%'
+			print(key_pattern)
+
+			for batch in self.__get_matching_batches(key_pattern+ '*'):
+				for idx, val in utils.for_each_item_int(list(batch)):
+					if not val:
+						continue
+					val = val.decode('utf-8')
+					if not val.startswith(key_pattern):
+						raise Exception('Invalid %s name %s!' % (data_type, val))
+					yield val.replace(key_pattern,'')
+		except Exception as e:
+			traceback.print_exc()
+			raise Exception("Failed to get all %ss from DB: %s!" % (data_type, str(e)))
+
+	def get_data_type_data(self, data_type_fullname):
+		try:
+			val = self.__rc.hgetall('repo%' + data_type_fullname)
+			return self.decode_redis(val)
+		except Exception as e:
+			raise Exception('Failed to get repo %s: %s' % (data_type_fullname, str(e)))
 
 ##################################################################
 # Main
