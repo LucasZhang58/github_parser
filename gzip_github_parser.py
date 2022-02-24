@@ -23,8 +23,8 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         # if 'WatchEvent' == record_d['type']:
         #         stars.get_WatchEvent(repo_name, created_at, json_payload, record_d, db)
 
-        # elif 'ReleaseEvent' == record_d['type']:
-        #         releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
+        if 'ReleaseEvent' == record_d['type']:
+                releases.get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db)
 
         # elif 'ForkEvent' == record_d['type']:
         #        forks.get_ForkEvent(repo_name, created_at, json_payload, record_d, db)
@@ -32,10 +32,10 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
         # elif 'CreateEvent' == record_d['type']:
         #         refs.get_CreateEvent(repo_name, created_at, json_payload, record_d, db, ref_past_repo_names)
 
-        if 'IssuesEvent' == record_d['type']:
-                #pass
-                # TODO enable this
-                issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
+        # if 'IssuesEvent' == record_d['type']:
+        #         #pass
+        #         # TODO enable this
+        #         issues.get_IssuesEvent(repo_name, created_at, json_payload, record_d, db)
 
         # if 'PushEvent' == record_d['type']:
                 # #pass
@@ -59,6 +59,9 @@ def parse_event(repo_name:str, created_at:str, json_payload:str, record_d:dict, 
 def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
         input_path = args[0]
         db = args[1]
+        repo_list = args[2]
+ #       print(repo_list)
+
 
         member_past_repo_names = set()
         commit_past_repo_names = set()
@@ -87,6 +90,11 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
                                                 repo_name = record_d['repository']['name']
                                         except KeyError as ke:
                                                 continue
+                             #   print(repo_name)
+                                if repo_name not in repo_list:
+                                        continue
+
+                                print(repo_name)
 
                                 # created_at
                                 try:
@@ -103,7 +111,7 @@ def parse_gzip_file(gzip_file:str, args:list, worker_id:int):
                                 # parse records
                                 if repo_name != "test":
                                         parse_event(repo_name, created_at, json_payload, record_d, db,	member_past_repo_names, member_dict, commits, commit_past_repo_names, ref_past_repo_names)
-
+                                
                         except Exception as e:
                                 print('parse_event EXCEPTION: ' +  (str(e)))
                                 print('record_d: ' + str(record_d))

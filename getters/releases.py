@@ -221,33 +221,33 @@ def get_ReleaseEvent(repo_name, created_at, json_payload, record_d, db):
 	else:
 		raise Exception("'r_dict' (%s) is not a dict!\n%s" % (r_dict, record_d))
 
-	# actor making the releasing
-	try:
-		if isinstance(record_d['actor'], dict):
-			actor_dict = record_d['actor']
-			actors.get_Actor(full_repo_name, actor_dict, record_d, db)
-		elif isinstance(record_d['actor_attributes'], dict):
-				actor_dict = record_d['actor_attributes']
-				actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
-		else:
-			print("record_d: " + str(record_d))
-			print("HAVEN'T FOUND P_DICT")
-	except KeyError as ke:
-		actor_dict = None
-		print('actor_dict: ' + str(actor_dict))
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
-		exit(1)
-	except Exception as e:
-		frameinfo = getframeinfo(currentframe())
-		print(frameinfo.filename, frameinfo.lineno)	
-		print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
-		traceback.print_exc()
-		exit(1)
+	# # actor making the releasing
+	# try:
+	# 	if isinstance(record_d['actor'], dict):
+	# 		actor_dict = record_d['actor']
+	# 		actors.get_Actor(full_repo_name, actor_dict, record_d, db)
+	# 	elif isinstance(record_d['actor_attributes'], dict):
+	# 			actor_dict = record_d['actor_attributes']
+	# 			actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
+	# 	else:
+	# 		print("record_d: " + str(record_d))
+	# 		print("HAVEN'T FOUND P_DICT")
+	# except KeyError as ke:
+	# 	actor_dict = None
+	# 	print('actor_dict: ' + str(actor_dict))
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)	
+	# 	print('KEYERROR RELEASEEVENT_EXCEPTION: ' + str(ke))
+	# 	exit(1)
+	# except Exception as e:
+	# 	frameinfo = getframeinfo(currentframe())
+	# 	print(frameinfo.filename, frameinfo.lineno)	
+	# 	print('ERROR RELEASEEVENT_EXCEPTION: ' + str(e))
+	# 	traceback.print_exc()
+	# 	exit(1)
 
-	# actor owning the repo
-	if isinstance(actor_dict, dict):
-		actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
-	else:
-		raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))
+	# # actor owning the repo
+	# if isinstance(actor_dict, dict):
+	# 	actors.get_Actor(full_repo_name, actor_dict, record_d, db, created_at)
+	# else:
+	# 	raise Exception("'actor_dict' (%s) is not a dict!\n%s" % (actor_dict, record_d))
