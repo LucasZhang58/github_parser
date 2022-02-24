@@ -7,55 +7,36 @@ from getters import actors, repos, name
 ##########################
 
 
-def get_issue_time_at_helper_a(record_d, type_at, in_dict):
-
-        if record_d['action'] == type_at and isinstance(in_dict, dict):
-                if type_at == 'opened':
-                        return in_dict['created_at']
-                elif type_at == 'closed':
-                        return in_dict['closed_at']
-                else:
-                        print("record_d doesn't have 'action'")
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print('record: ' + str(record_d))
-
-
-def get_issue_time_at_helper_b(record_d, type_at):
-
-        if record_d['action'] == type_at:
-                if type_at == 'opened':
-                        return record_d['created_at']
-                elif type_at == 'closed':
-                        return record_d['closed_at']
-                else:
-                        print("record_d doesn't have 'action'")
-                        frameinfo = getframeinfo(currentframe())
-                        print(frameinfo.filename, frameinfo.lineno)
-                        print('recrod: ' + str(record_d))
-
-
-
-
 def action_in_helper(created_at, in_dict, type_at):
         try:  
                 try:
                         if isinstance(in_dict['issue'], dict):
-                                print('get_issue_time_at_helper_a(in_dict, type_at, in_dict["issue"]["state"]): ' + str(get_issue_time_at_helper_a(in_dict, type_at, in_dict['issue']['state'])))
-                                return get_issue_time_at_helper_a(in_dict, type_at, in_dict['issue']['state'])
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
+                                print('get_issue_time_at_helper(in_dict, type_at, in_dict["issue"]["state"]): ' + str(get_issue_time_at_helper(in_dict, type_at, in_dict['issue']['state'], created_at)))
+                                return get_issue_time_at_helper(in_dict, type_at, in_dict['issue']['state'], created_at)
                         elif isinstance(in_dict['issue'], int):
-                                print('get_issue_time_at_helper_a(in_dict, type_at, in_dict["action"]): ' + str(get_issue_time_at_helper_a(in_dict, type_at, in_dict['action'])))
-                                return get_issue_time_at_helper_a(in_dict, type_at, in_dict['action'])
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
+                                print('get_issue_time_at_helper(in_dict, type_at, in_dict["action"]): ' + str(get_issue_time_at_helper(in_dict, type_at, in_dict['action'], created_at)))
+                                return get_issue_time_at_helper(in_dict, type_at, in_dict['action'], created_at)
                         else:
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
                                 print('It seems like "{}"["issue"] is neither a dict nor an int'.format(in_dict))
+                                return created_at
 
                 except KeyError as ke:
                         try:
-                                print("get_issue_time_at_helper_a(in_dict, type_at, in_dict['milestone']['state']): " + str(get_issue_time_at_helper_a(in_dict, type_at, in_dict['milestone']['state'])))
-                                return get_issue_time_at_helper_a(in_dict, type_at, in_dict['milestone']['state'])
+                                frameinfo = getframeinfo(currentframe())
+                                print(frameinfo.filename, frameinfo.lineno)
+                                print("get_issue_time_at_helper(in_dict, type_at, in_dict['milestone']['state']): " + str(get_issue_time_at_helper(in_dict, type_at, in_dict['milestone']['state'])))
+                                return get_issue_time_at_helper(in_dict, type_at, in_dict['milestone']['state'], created_at)
                         except KeyError as ke:
                                 try:
-                                        return get_issue_time_at_helper_b(in_dict, type_at)
+                                        frameinfo = getframeinfo(currentframe())
+                                        print(frameinfo.filename, frameinfo.lineno)
+                                        return get_issue_time_at_helper(in_dict, type_at, in_dict, created_at)
                                 except KeyError as ke:
                                         print("'action' not found in record_d nor json_payload")
                                         print('record_d: ' + str(in_dict))
@@ -70,20 +51,85 @@ def action_in_helper(created_at, in_dict, type_at):
                 traceback.print_exc()
                 exit(1)
 
+def get_issue_time_at_helper__helper(in_dict, type_at, in_dict_2, created_at):
+
+        if type_at == 'opened':
+                # frameinfo = getframeinfo(currentframe())
+                # print(frameinfo.filename, frameinfo.lineno)
+                return in_dict_2['created_at']
+        elif type_at == 'closed':
+                # frameinfo = getframeinfo(currentframe())
+                # print(frameinfo.filename, frameinfo.lineno)
+                return in_dict_2['closed_at']
+        else:
+                print("record_d doesn't have 'action'")
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)
+                print('record: ' + str(in_dict))
+                return created_at
+
+def get_issue_time_at_helper(in_dict, type_at, in_dict_2, created_at):
+
+        if in_dict['action'] == type_at and isinstance(in_dict_2, dict):
+                get_issue_time_at_helper__helper(in_dict, type_at, in_dict_2, created_at)
+
+        elif in_dict['action'] == type_at:
+                get_issue_time_at_helper__helper(in_dict, type_at, in_dict, created_at)
+        else:
+                print("in_dict doesn't have 'action'")
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)
+                print('in_dict: ' + str(in_dict))
+                return created_at
 
 def get_issue_time_at(created_at, json_payload, record_d, type_at):
         if 'action' in record_d:
-                print('action_in_helper(created_at, record_d, type_at): ' + str(action_in_helper(created_at, record_d, type_at)))
-                action_in_helper(created_at, record_d, type_at)
+                # frameinfo = getframeinfo(currentframe())
+                # print(frameinfo.filename, frameinfo.lineno)
+                # print('action_in_helper(created_at, record_d, type_at): ' + str(action_in_helper(created_at, record_d, type_at)))
+                return action_in_helper(created_at, record_d, type_at)
    
         elif 'action' in json_payload:
-                print('action_in_helper(created_at, json_payload, type_at): ' + str(action_in_helper(created_at, json_payload, type_at)))
-                action_in_helper(created_at, json_payload, type_at)
-
+                # frameinfo = getframeinfo(currentframe())
+                # print(frameinfo.filename, frameinfo.lineno)
+                # print('action_in_helper(created_at, json_payload, type_at): ' + str(action_in_helper(created_at, json_payload, type_at)))
+                # print('record_d: ' + str(record_d))
+                return action_in_helper(created_at, json_payload, type_at)
         else:
                 print('record_d: ' + str(record_d))
                 frameinfo = getframeinfo(currentframe())
                 print(frameinfo.filename, frameinfo.lineno)
+                return
+
+
+def get_issue_ID(in_dict):
+        if isinstance(in_dict['issue'], int):
+                return  in_dict['issue']
+        elif isinstance(in_dict['issue'], dict):
+                if 'id' in in_dict['issue']:
+                        return in_dict['issue']['id']
+                else:
+                        print('id is not in in_dict["issue"] when in_dict["issue"] is not a dict')
+        else:
+                print('issue is in in_dict but is not an int')
+                print('in_dict: ' + str(in_dict))
+                frameinfo = getframeinfo(currentframe())
+                print(frameinfo.filename, frameinfo.lineno)
+
+# def time_at_helper(in_dict, created_at, json_payload, record_d):
+#         if in_dict['action'] == 'opened':
+#                 issue_created_at = get_issue_time_at(created_at, json_payload, record_d, 'opened')
+#         elif in_dict['action'] == 'closed':
+#                 issue_closed_at = get_issue_time_at(created_at, json_payload, record_d, 'closed')
+#         elif in_dict['action'] == 'reopened':
+#                 issue_created_at = get_issue_time_at(created_at, json_payload, record_d, 'opened')
+
+#         else:
+#                 print('action is in json_payload but is neither opened nor closed nor reopened')
+#                 print('json_payload: ' + str(json_payload))
+#                 frameinfo = getframeinfo(currentframe())
+#                 print(frameinfo.filename, frameinfo.lineno)
+
 
 
 def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
@@ -95,43 +141,26 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
         try:
                         #get issue ID
                         if 'issue' in record_d:
-                                if isinstance(record_d['issue'], int):
-                                        issue_id = record_d['issue']
-                                elif isinstance(record_d['issue'], dict):
-                                        issue_id = record_d['issue']['issue_id']
-                                else:
-                                        print('record_d: ' + str(record_d))
-                                        frameinfo = getframeinfo(currentframe())
-                                        print(frameinfo.filename, frameinfo.lineno)
-                                        issue_id = None
-                                        raise Exception('issue is not an int or a dict')
+                                issue_id = get_issue_ID(record_d)
+
                         elif 'issue' in json_payload:
-                                if isinstance(json_payload['issue'], int):
-                                        issue_id = json_payload['issue']
-                                elif isinstance(json_payload['issue'], dict):
-                                        if 'id' in json_payload['issue']:
-                                                issue_id = json_payload['issue']['id']
-                                        else:
-                                                print('id is not in json_payload["issue"] when json_payload["issue"] is not a dict')
-                                else:
-                                        print('issue is in json_payload but is not an int')
-                                        print('json_payload: ' + str(json_payload))
-                                        frameinfo = getframeinfo(currentframe())
-                                        print(frameinfo.filename, frameinfo.lineno)
+                                issue_id = get_issue_ID(json_payload)
                         else:
                                 print('issue is neither in record_d nor json_payload')
                                 print('json_payload: ' + str(json_payload))
                                 frameinfo = getframeinfo(currentframe())
                                 print(frameinfo.filename, frameinfo.lineno)
-
-
-        
                         try:
                                 if isinstance(json_payload['issue'], int):
                                         issue_id = json_payload['issue']
+                                elif isinstance(record_d['issue'], int):
+                                        issue_id = record_d['issue']
+                                else:
+                                        print('if issue is an int, it is neither in json_payload nor record_d')
                         except KeyError as ke:
                                 issue_id = None
-                                
+
+                                # time_at
                         if 'action' in record_d:
                                 if record_d['action'] == 'opened':
                                         issue_created_at = get_issue_time_at(created_at, json_payload, record_d, 'opened')   
@@ -146,6 +175,7 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                         print('record_d: ' + str(record_d))
                                         frameinfo = getframeinfo(currentframe())
                                         print(frameinfo.filename, frameinfo.lineno)
+
                         elif 'action' in json_payload:
                                 if json_payload['action'] == 'opened':
                                         issue_created_at = get_issue_time_at(created_at, json_payload, record_d, 'opened')
@@ -170,18 +200,11 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                 print('ERROR ISSUEEVENT_EXCEPTION: ' + str(e))
                 traceback.print_exc()
                 exit(1)
-        # print('issue_created_at: ' + str(issue_created_at))
-        # print('issue_closed_at: ' + str(issue_closed_at))
-        # frameinfo = getframeinfo(currentframe())
-        # print(frameinfo.filename, frameinfo.lineno)
-
-
 
         try:    # get description
                 description = record_d['body']
         except KeyError as ke:
                 description = None
-
         try:    # get user
                 if 'user' in record_d:
                         if isinstance(record_d['user'], dict):
@@ -199,13 +222,11 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                         print('record_d: ' + str(record_d))
                                         frameinfo = getframeinfo(currentframe())
                                         print(frameinfo.filename, frameinfo.lineno)
-
                         else:
                                 print('actor is not in json_payload')
                                 print('reacord_d: ' + str(record_d))
                                 frameinfo = getframeinfo(currentframe())
                                 print(frameinfo.filename, frameinfo.lineno)
-
                 elif 'actor' in record_d:
                         if isinstance(record_d['actor'], str):
                                 user = record_d['actor']
@@ -214,7 +235,6 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                 print('record_d: ' + str(record_d))
                                 frameinfo = getframeinfo(currentframe())
                                 print(frameinfo.filename, frameinfo.lineno)
-
                 elif 'user' in record_d['issue']:
                         if isinstance(record_d['issue'], dict):
                                 if isinstance(record_d['issue']['user'], dict):
@@ -229,8 +249,6 @@ def get_IssuesEvent(repo_name, created_at, json_payload, record_d, db):
                                 print("record_d['issue'] is not a dict")
                                 frameinfo = getframeinfo(currentframe())
                                 print(frameinfo.filename, frameinfo.lineno)
-
-
                 else:   
                         print("Seems like record_d doesn't contain user_id record_d: " + str(record_d))
                         user = None
